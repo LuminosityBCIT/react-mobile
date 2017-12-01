@@ -72,13 +72,15 @@ constructor(props) {
             popUpType:1,
             burgerIcon:require('../imgs/menuBut.png'),
             cloudToggle:true,
-            maxLimit: 9,
-            clickedValue: "Home"
+            maxLimit: 15,
+            clickedValue: "Home",
+            selectedFolder: null,
+            fullBookmarkLists: null
             //browserVisibility:"'hidden'"
                
         };
         this.webLink = "https://www.google.ca/";
-    this.imgSource = "https://apileap.com/api/screenshot/v1/urltoimage?access_key=6597e3c2daf5432cb84991dbd18c09f8&url=";
+        this.imgSource = "https://apileap.com/api/screenshot/v1/urltoimage?access_key=6597e3c2daf5432cb84991dbd18c09f8&url=";
     }
  
     componentWillMount(){
@@ -86,8 +88,7 @@ constructor(props) {
         
         const credential = firebase.auth.GoogleAuthProvider.credential(this.props.idToken, this.props.accessToken);
             
-        return firebase.auth().signInWithCredential(credential);
-    
+        return firebase.auth().signInWithCredential(credential);    
     }
     
     componentDidMount(){
@@ -100,187 +101,127 @@ constructor(props) {
         })
         
         console.log("userID = " + user.uid);
-        
-/*// connect to a Firebase table
-       
-        
-//KAYLIE!!
-        
-//        var dbRefValue = "users/"+user.uid+"/bookmarks";
-//
-//        
-//        var dbref = firebaseDbh.ref(dbRefValue);
-//        dbref.on('value', (e) => {
-//            var rows = [];
-//            if ( e && e.val() && e.val().map ) {
-//                e.val().map((v) => rows.push ( v ));
-//            }
-//            var ds = this.state.dataSource.cloneWithRows(rows);
-//            this.setState({
-//                dataSource: ds
-//            });
-            
-            //console.log("ds " + ds);
-//        });
-//        
-//        var firebaseRef = firebase.database().ref('folder');
-//        firebaseRef.on('value', (snapshot) => {
-//
-//            var folderArr = [];
-//            
-//            snapshot.forEach(function(childSnapshot) {
-//
-//                var folder_name = snapshot.child("folder_name").val();
-//                var obj = {
-//                    folder_name: folder_name,
-//                    key: snapshot.key
-//                }
-//                folderArr.push(childSnapshot);
-//            });
-//
-//            this.setState({
-//                folderLists: folderArr
-//            });
-//        });*/
 
-    var bookmarkRef = firebase.database().ref("users/"+user.uid+"/bookmarks");  
-        
-    var folderRef = firebase.database().ref("users/"+user.uid+"/folders");     
-
-    var bmDisplay = bookmarkRef;    
-    var fdDisplay = folderRef;    
-    var self = this;
-        
-        //loop through snapshot on load
-        bmDisplay.once('value', function(snapshot){     
-            var bookmarkArr = self.state.bookmarkLists;
+        var bookmarkRef = firebase.database().ref("users/"+user.uid+"/bookmarks");  
             
+        var folderRef = firebase.database().ref("users/"+user.uid+"/folders");     
+
+        var bmDisplay = bookmarkRef;    
+        var fdDisplay = folderRef;    
+        var self = this;
+                   
+        // connect to a Firebase table
+        //
+        //KAYLIE!!
+        //
+        //
+        //  Following code is to retrieve data snapshot from Firebase for user's bookmark data
+        //  and converting it into datasource for ListView instaed of ScrollView which causes some problem on display multiple items in rows
+        //  Reference can be found in https://medium.com/@mpr312/a-simple-react-native-app-using-firebase-realtime-database-ce794ecdc47d
+        //
+        //  Also, using Firebase, there is no point on subscribing for two events, "once('value')", and "on('child_added')"
+        //  as "on('value')" will automatically detect any child added or any data updated in REAL TIME. 
+        //
+        var bookmarkDbRefValue = "users/"+user.uid+"/bookmarks";   
+        var firebaseBookmarkRef = firebase.database().ref(bookmarkDbRefValue);   
+        firebaseBookmarkRef.on('value', (snapshot) => {
+
+            var bookmarkArr = [];
+
             snapshot.forEach(function(bookmarkSnapshot) {
+                var bmTitle = bookmarkSnapshot.child("title").val();
+                var bmURL = bookmarkSnapshot.child("url").val();
+                var fkey = bookmarkSnapshot.child("folderkey").val();
                 
-            var bmTitle = bookmarkSnapshot.child("title").val();
-            var bmURL = bookmarkSnapshot.child("url").val();
-            var fkey = bookmarkSnapshot.child("folderkey").val();
-            
-            if(bmTitle == null){
-                return false;
-            }    
-                
-            var obj = {
-                title:bmTitle,
-                url:bmURL,
-                key:bookmarkSnapshot.key,
-                //index:bookmarkArr.length,
-                folderkey: fkey
-            }
-            bookmarkArr.push(obj);
-         
-            });
-            
-               self.setState({
-                bookmarkLists: bookmarkArr
-            })
-         
-                             
-            //console.log("bookmark", bookmarkArr);
-            //console.log("CDM done");
-        });
-        
-        //loop through bookmark on add
-        bmDisplay.on('child_added', function(snapshot){     
-            var bookmarkArr = self.state.bookmarkLists;
-            
-            snapshot.forEach(function(bookmarkSnapshot) {
-                
-            var bmTitle = bookmarkSnapshot.child("title").val();
-            var bmURL = bookmarkSnapshot.child("url").val();
-            var fkey = bookmarkSnapshot.child("folderkey").val();
-        
-            if(bmTitle == null){
-                return false;
-            }  
-
-            var obj = {
-                title:bmTitle,
-                url:bmURL,
-                key:bookmarkSnapshot.key,
-                //index:bookmarkArr.length,
-                folderkey: fkey
-            }
-            bookmarkArr.push(obj);
-         
-            });
-            
-               self.setState({
-                bookmarkLists: bookmarkArr
-            })
-         
-                             
-            //console.log("bookmark", bookmarkArr);
-            //console.log("CDM done");
-        });
-
-        
-        fdDisplay.once('value', function(snapshot){     
-            
-            var folderArr = self.state.folderLists;
-            
-            snapshot.forEach(function(folderSnapshot) {
-                
-            var folder_name = folderSnapshot.child("folder_name").val();
-            //console.log(snapshot.child("folderkey").val());
-            if(folder_name == null){
-                return false;
-            }
-            var obj = {
-                folder_name:folder_name,
-                key:folderSnapshot.key,
-                //index:folderArr.length
-            }
-            folderArr.push(obj);
-            
-            });
-            
-               self.setState({
-                folderLists: folderArr
-            })
-         
-   
-            //console.log("folder", folderArr);
-            //console.log("CDM done");
-        });
-        
-        fdDisplay.on('child_added', function(snapshot){     
-            var folderArr = self.state.folderLists;
-            
-            snapshot.forEach(function(folderSnapshot) {
-              
-            var folder_name = folderSnapshot.child("folder_name").val();
-            //console.log(snapshot.child("folderkey").val());
-            
-            if(folder_name == null){
-                return false;
-            }  
-            
+                if(bmTitle == null){
+                    return false;
+                }    
+                    
                 var obj = {
-                folder_name:folder_name,
-                key:folderSnapshot.key,
-                //index:folderArr.length
-            }
-            folderArr.push(obj);
-            
+                    title:bmTitle,
+                    url:bmURL,
+                    key:bookmarkSnapshot.key,
+                    folderkey: fkey
+                };
+
+                bookmarkArr.push(obj);
             });
-            
-               self.setState({
-                folderLists: folderArr
-            })
-         
-   
-            //console.log("folder", folderArr);
-            //console.log("CDM done");
+
+            console.log(JSON.stringify(bookmarkArr));
+            self.setState({
+                bookmarkLists: bookmarkArr,
+                fullBookmarkLists: bookmarkArr
+            });
         });
-        
-        
-        
+
+        var folderDbRefValue = "users/"+user.uid+"/folders";
+        var firebaseRef = firebase.database().ref(folderDbRefValue);
+        firebaseRef.on('value', (snapshot) => {
+
+            var folderArr = [];
+            
+            var parentFolders = [];
+            var childFolders = [];
+            var combinedOrderedFolder = [];
+
+            snapshot.forEach(function(childSnapshot) {
+
+                var folder_name = childSnapshot.child("folder_name").val();
+                var folder_key = childSnapshot.child("folder_key").val();
+                var parent_key = childSnapshot.child("parent_key").val();
+
+                var obj = {
+                    folder_name: folder_name,
+                    folder_key: folder_key,
+                    parent_key: parent_key,
+                    value: folder_name,
+                    key: snapshot.key
+                };
+
+                folderArr.push(obj);
+            });
+
+            //
+            //  split parent, and child folders
+            //
+            folderArr.forEach(function(thisFolder) {
+
+                //
+                //  if parent key exists, save it in child folders
+                //
+                if (thisFolder["parent_key"])
+                {
+                    childFolders.push(thisFolder);
+                }
+                //
+                //  if parent key does not exist, save it in parent folders
+                //
+                else {
+                    parentFolders.push(thisFolder);
+                }
+            });
+
+            //
+            //  loop through parent folder array to save them in order with child
+            //
+            parentFolders.forEach(function(thisFolder) {
+
+                combinedOrderedFolder.push(thisFolder);
+                childFolders.forEach(function(child) {
+
+                    if (child['parent_key'] == thisFolder['folder_key'])
+                    {
+                        combinedOrderedFolder.push(child);
+                    }
+                });
+            });
+
+            // alert(JSON.stringify(parentFolders));
+
+            this.setState({
+                folderLists: combinedOrderedFolder
+            });
+        });
       
         //burger menu state
         this.state.burgerbuts = true;
@@ -289,9 +230,8 @@ constructor(props) {
         this.setState({sideDivl: this.state.sideDivl = "-60%"})    
         
     }
-    
-//    
-    
+
+
     burgerOnPress = () => {
         if(this.state.burgerbuts == true) { 
             this.state.burgerbuts = false;    
@@ -327,21 +267,32 @@ constructor(props) {
         })
     }
     
-    submitBookmark = (obj) => {
-        console.log(this.state.bookmarkLists);
-    
-       //var bookmarkRef = this.state.bookmarkRef;
-    
-    var bookmarkRef = firebase.database().ref("users/"+this.state.userID).child("bookmarks");    
-            bookmarkRef.push(obj);
-            console.log("bookmark sent");  
 
+    submitBookmark = (obj) => {
+        var newBookmarkObj = obj;
+        var user = firebase.auth().currentUser;
+        var bookmarkDbRef = "users/"+user.uid+"/bookmarks";
+
+        firebase.database().ref(bookmarkDbRef).once('value').then(function(snapshot) {
+            var snapshotArray = [];
+
+            snapshot.forEach(function(childSnapshot) {
+                var item = childSnapshot.val();
+                item.key = childSnapshot.key;
+                snapshotArray.push(item);
+            });
+            snapshotArray.unshift(newBookmarkObj);
+            firebase.database().ref(bookmarkDbRef).set(snapshotArray);
+        });
     }     
     
 
     submitFolder = (obj) => {
-        /*var folderValue = this.state.folderValue;
-        firebase.database().ref("folder").once('value').then(function(snapshot) {
+        var newFolderObj = obj;
+        var user = firebase.auth().currentUser;
+        var folderDbRefValue = "users/"+user.uid+"/folders";
+
+        firebase.database().ref(folderDbRefValue).once('value').then(function(snapshot) {
             
             var snapshotArray = [];
 
@@ -350,70 +301,87 @@ constructor(props) {
                 item.key = childSnapshot.key;
                 snapshotArray.push(item);
             });
-
-            var newFolder = {};
-            newFolder["folder_name"] = folderValue;
-            snapshotArray.unshift(newFolder);
-
-            firebase.database().ref("folder").set(snapshotArray);
+            snapshotArray.unshift(newFolderObj);
+            firebase.database().ref(folderDbRefValue).set(snapshotArray);
         });
-        this.state.changeWindows = null;
-        */
-        
-        
-        var folderRef = firebase.database().ref("users/"+this.state.userID).child("folders");
-       
-            folderRef.push(obj);
-            console.log("new folder created");   
-        }
+    }
     
 
     folderSelection = (key, index, name, snapshot) =>{
-            
-        var folderkeyRef = firebase.database().ref("users/"+this.state.userID).child("folders");
           
         var whichFolder = name;
+        var selectedFolder = null;
+
+        this.state.folderLists.forEach(function(folder) {
+
+            if (folder["folder_name"] == name)
+            {
+                selectedFolder = folder;
+            }
+        });
+
         this.setState({
             clickedValue:whichFolder
-        })
-        // this.setState({
-        //     folderkey: folderKeyRef.key
-        // });
-         
-        // console.log(name + " key: " + folderKeyRef.key);
+        });
 
-        // var folderNameDisplay = this.state.folderNameDisplay;
-        // folderNameDisplay.innerHTML = name;  
+        var selected_folder_key = "";
+
+        if (selectedFolder)
+        {
+            selected_folder_key = selectedFolder["folder_key"];
+        }
+        else if (name == "Unorganized")
+        {
+            selected_folder_key = "unorganized";
+        }
+
+        if (selected_folder_key)
+        {
+            var filteredBookmarks = [];
+            this.state.fullBookmarkLists.forEach(function(bookmark) {
+
+                console.log("Bookmark Name: " + bookmark["name"] + " // folder key: " + bookmark["folderkey"] + " // selected folder key: " +selected_folder_key);
+                if (selected_folder_key == bookmark["folderkey"])
+                {
+                    filteredBookmarks.push(bookmark);
+                }
+            });
+
+            console.log("List of bookmarks: " + JSON.stringify(filteredBookmarks));
+            this.setState({
+                folderKey:selected_folder_key,
+                bookmarkLists:filteredBookmarks
+            });
+        }
     }
 
     removeFolder = (key, index) => {
-        // var filter = this.state.bookmarkLists.filter((obj, i)=>{
-            
-        //     return (obj.folderkey == key)
-        // });
-        
-        // for(var i in filter){
-        //     console.log(filter[i]);
-        //     firebase.database().ref("bookmarks/"+filter[i].key).remove();
-        // }
-        // firebaseApp.database().ref("folder/"+key).remove();
-        
-        // var folderArr = this.state.folderLists;
-        // folderArr.splice(index, 1);
-        
-        // //console.log(folderArr);
-        // this.setState({
-        //     folderLists: folderArr
-        // })    
+
+        //
+        //  Do the same thing as what I did for adding a new bookmark
+        //  except that I don't add a new bookmark, and skip the index that I am deleting.
+        //
+        var user = firebase.auth().currentUser;
+        var folderDbRefValue = "users/"+user.uid+"/folders";
+
+        var snapshotArray = [];
+        var i = 0;
+        this.state.folderLists.forEach(function(folder) {
+
+            if (i != index)
+            {
+                snapshotArray.push(folder);
+            }
+            i++;
+        });
+        firebase.database().ref(folderDbRefValue).set(snapshotArray);
     }
     
     
     cloudState = (data) =>{
         this.setState({
             cloudToggle:data
-        })
-        
-        
+        });
     }
 
     //
@@ -474,14 +442,11 @@ constructor(props) {
 
 render() {
     
-    var filter = this.state.bookmarkLists.filter((obj, i)=>{
-        return (obj.folderkey == this.state.folderkey);
-    })
     
     //console.log("filter",filter);
     
     
-    var showBookmark = filter.map((obj, i)=>{
+    var showBookmark = this.state.bookmarkLists.map((obj, i)=>{
         return (
 
             <View style={styles.markGalleryDisplay} key={i}>
@@ -577,6 +542,7 @@ render() {
         else if(this.state.popUpType == 2){
              popUpDisplay = (
                  <CreateBookmark
+                    folderLists={this.state.folderLists}
                     selectPopUp={this.selectPopUp}
                     selectWindow={this.selectWindow}
                     submitBookmark={this.submitBookmark}
@@ -592,6 +558,7 @@ render() {
         else if(this.state.popUpType == 3){
              popUpDisplay = (
                     <CreateFolder 
+                        folderLists={this.state.folderLists}
                         selectPopUp={this.selectPopUp} 
                         selectWindow={this.selectWindow}
                         submitFolder={this.submitFolder}

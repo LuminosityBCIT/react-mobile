@@ -2,6 +2,10 @@ import {StyleSheet} from 'react-native';
 
 module.exports = StyleSheet.create({
 
+folderDropDown: {
+       width: "80%"
+},   
+
 containerHead:{
          position: 'absolute',
          bottom:0,

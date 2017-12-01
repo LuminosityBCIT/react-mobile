@@ -3,6 +3,10 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
 
 import styles from './css/createBookmarkStyle';
 
+//
+//  https://www.npmjs.com/package/react-native-material-dropdown
+//
+import { Dropdown } from 'react-native-material-dropdown';
  
   export default class CreateBookmark extends React.Component {
       
@@ -17,7 +21,8 @@ import styles from './css/createBookmarkStyle';
             urlValue:"",
             folderValue:"",
             webLink:"",
-            autoFocus:false
+            autoFocus:false,
+            selectedFolder: null
       };
       this.closeWindow = this.closeWindow.bind(this);
 }
@@ -64,11 +69,21 @@ folderfunction = (text) =>
 addBookmark = () => {
 
         if (this.state.titleValue != ""){
+
+        var folder_key = null;
+
+        if (this.state.selectedFolder)
+        {
+          folder_key = this.state.selectedFolder["folder_key"];
+        }
+        else {
+          folder_key = "unorganized";
+        }
             //if (this.state.urlValue != ""){
                 var bookmark = {
                     title: this.state.titleValue,
                     url: this.props.webLink,
-                    folderkey: this.props.folderkeyValue
+                    folderkey: folder_key
                 }
 
             this.props.submitBookmark(bookmark);
@@ -89,6 +104,22 @@ addBookmark = () => {
 cancelFunction = () =>{
       this.props.selectPopUp(1);
       this.props.cloudState(true);
+  }
+
+  onParentFolderSelectionChange = (text) =>
+  {
+      var selectedFolder = null;
+
+      this.props.folderLists.forEach(function(folder) {
+          if (folder['folder_name'] == text)
+          {
+              selectedFolder = folder;
+          }
+      });
+
+      this.setState({
+          selectedFolder : selectedFolder
+      });
   }
 
 
@@ -127,11 +158,12 @@ render() {
                      </View>   
                 </View>
 
-                <View style={styles.addMarkPic1}>  
-                     <Image style={styles.addFolder}
-                      source={require('../imgs/folder.png')}/>
-                     <View style={styles.addMarkPic}>   
-                     </View>
+                <View style={styles.folderDropDown}>  
+                      <Dropdown
+                        label='Choose a folder'
+                        data={this.props.folderLists}
+                        onChangeText={this.onParentFolderSelectionChange}
+                      />
                 </View>
                 
                 <View style={styles.addMarkPic1}>   

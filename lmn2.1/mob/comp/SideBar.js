@@ -5,69 +5,100 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
 
   export default class SideBar extends React.Component {
       
-      constructor(props){
-            super(props);  
-          this.callFun = this.callFun.bind(this);
-      }
- 
-    
-callFun(){
-        alert("Image Clicked!!!");
-  }
+    constructor(props){
+      super(props);  
+      this.callFun = this.callFun.bind(this);
+    }
+
+
+    callFun(){
+      alert("Image Clicked!!!");
+    }
   
            
    
-render() {
-    
-    var showFolder = this.props.folderLists.map((obj, i)=>{
-    
-        return (            
-    <View style={styles.sidedivPic} key={i}>
-        <View style={styles.sidedivSubPic}>   
-            <TouchableHighlight
-            underlayColor={"#FFCC33"}
-            style={styles.bmfBut}
-            id="folderBtn" onPress={this.props.folderSelection.bind(this, obj.key, i, obj.folder_name)}>
-            <Text style={styles.folderText}>{ ((obj.folder_name).length > this.props.maxLimit) ? (((obj.folder_name).substring(0,this.props.maxLimit-3))+ '...'):obj.folder_name } </Text>
-            </TouchableHighlight>
-            <Button title={"X"}  onPress={this.props.removeFolder.bind(this, obj.key, i)}/>
-         </View>                                      
-    </View>
-        ) 
-    });
-   
+    render() {
 
-//    <View style={styles.sidedivSubPic}>   
-//        
-//            <TouchableHighlight
-//            underlayColor={"#FBB03B"}
-//            style={styles.bmfBut}
-//             onPress={this.callFun}>
-//            <Text style={styles.folderText}>Text</Text>
-//            </TouchableHighlight>
-//        
-//           <TouchableHighlight
-//            underlayColor={"#ff0000"}
-//            style={styles.delBut}
-//             onPress={this.callFun}>
-//            <Text style={styles.delText}>X</Text>
-//            </TouchableHighlight>
-//        
-//           
-//
-//         </View>  
+      //
+      //  Create an array of folders with dummy "Unorganized" folder which is not present in Database
+      //
+      var folderListWithUnorganized = [];
 
-    return (
-        
-        <ScrollView style={styles.sideScrollDiv}>
-            {showFolder}
-        </ScrollView>                            
-    );
+      this.props.folderLists.forEach(function(thisFolder) {
+        folderListWithUnorganized.push(thisFolder);
+      });
+
+      var unorganizedFolder = {};
+      unorganizedFolder["folder_name"] = "Unorganized";
+      unorganizedFolder["folder_key"] = "unorganized";
+      unorganizedFolder["parent_key"] = null;
+      folderListWithUnorganized.push(unorganizedFolder);
+
+
+      var showFolder = folderListWithUnorganized.map((obj, i)=>{
+
+        var imgElement = null;
+        //
+        //  if parent_key exists, this is subfolder, otherwise, it's parent folder
+        //
+        if (obj['parent_key'])
+        {
+            imgElement = <View style={styles.folderImgView}><Image style={styles.subFolderImg} source={require('../imgs/subFolder.png')} /></View>;
+        }
+        else {
+            imgElement = <View style={styles.folderImgView}><Image style={styles.folderImg} source={require('../imgs/folder.png')} /></View>;
+        }
+
+        //
+        //  Don't create delete button for unorganized folder
+        //
+        var deleteButton = null;
+        if (obj['folder_key'] != "unorganized")
+        {
+            deleteButton = <Button title={"X"}  onPress={this.props.removeFolder.bind(this, obj.key, i)}/>;
+        }
+            return (            
+        <View style={styles.sidedivPic} key={i}>
+            <View style={styles.sidedivSubPic}>   
+                {imgElement} 
+                <TouchableHighlight
+                id="folderBtn" onPress={this.props.folderSelection.bind(this, obj.key, i, obj.folder_name)}>
+                <Text style={styles.folderText}>{ ((obj.folder_name).length > this.props.maxLimit) ? (((obj.folder_name).substring(0,this.props.maxLimit-3))+ '...'):obj.folder_name } </Text>
+                </TouchableHighlight>
+                {deleteButton}
+             </View>                                      
+        </View>
+            ) 
+      });
+
+      return (
+          
+          <ScrollView style={styles.sideScrollDiv}>
+              {showFolder}
+          </ScrollView>                            
+      );
   }
 };
 
 const styles = StyleSheet.create({
     
+folderImgView : {
+    width: 40,
+    height: 30
+},
+
+folderImg : {
+    width: 31,
+    height: 23,
+    marginTop: 12
+},
+
+subFolderImg : {
+    width: 27,
+    height: 15,
+    marginTop: 15
+},
+
 sidediv:{
          position: 'absolute',
          top:73,
@@ -108,7 +139,7 @@ bmfBut:{
 
 folderText:{
     marginTop:15,
-    color: "white"
+    color: "black"
 },
     
 delBut:{

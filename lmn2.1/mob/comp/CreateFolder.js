@@ -3,58 +3,113 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
 //import CheckBox from 'react-native-checkbox';
 
 import styles from './css/createFolderStyle';
+
+//
+//  https://www.npmjs.com/package/react-native-material-dropdown
+//
+import { Dropdown } from 'react-native-material-dropdown';
  
   export default class CreateFolder extends React.Component {
       
- constructor(props) {
-  super();
-//  this.state = {
-//    language: 'english', // or language: '',
-//  }
+  constructor(props) {
+      super();
       this.state = { 
-          titleValue: "New Folder" 
-    
+          titleValue: "New Folder",
+          selectedParentFolder: null 
       }
- }
-      
-componentDidMount(){
-    this.inputFocus.focus();
   }
       
-      
+  componentDidMount(){
+    this.inputFocus.focus();
+  }
+        
+        
   titlefunction = (text) =>
-    {
-        //var titleFrom = text;
-        this.setState({
-            titleValue:text
-        });
-    }
-      
+  {
+      //var titleFrom = text;
+      this.setState({
+          titleValue:text
+      });
+  }
+        
   addFolder = () =>
-    {
-        if (this.state.titleValue != ""){
-                var folder = {
-                    folder_name: this.state.titleValue,
-                    //folderkey: this.props.folderkeyValue
-                }
+  {
+      if (this.state.titleValue != ""){
 
-            this.props.submitFolder(folder);
-            this.props.selectPopUp(1);
-            this.props.cloudState(true);
-            
+        var parent_key = null;
+
+        if (this.state.selectedParentFolder)
+        {
+          parent_key = this.state.selectedParentFolder["folder_key"];
         }
-    }
-  
+
+        var folder = {
+            folder_name: this.state.titleValue,
+            folder_key: this.generateRandomString(),
+            parent_key: parent_key
+        }
+        
+        this.setState({
+          selectedParentFolder: null
+        });
+
+        this.props.submitFolder(folder);
+        this.props.selectPopUp(1);
+        this.props.cloudState(true);
+        
+      }
+  }
+    
   cancelFunction = () =>{
       this.props.selectPopUp(1);
       this.props.cloudState(true);
   }
 
+  onParentFolderSelectionChange = (text) =>
+  {
+      var selectedFolder = null;
+
+      this.props.folderLists.forEach(function(folder) {
+          if (folder['folder_name'] == text)
+          {
+              selectedFolder = folder;
+          }
+      });
+
+      this.setState({
+          selectedParentFolder : selectedFolder
+      });
+  }
+
+  generateRandomString = () =>
+  {
+      //
+      //  Same code used in extension to generate random string
+      //
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for (var i = 0; i < 20; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+      return text;
+  }
+
          
          
 render() {
-    
-  
+    //
+    // create a new array just for the parent folders
+    // there is no need to display sub folders when creating a folder
+    //
+    var parentFolders = [];
+
+    this.props.folderLists.forEach(function(folder) {
+        if (!folder['parent_key'])
+        {
+            parentFolders.push(folder);
+        }
+    });
     
     return (
         
@@ -82,16 +137,13 @@ render() {
              </View>   
         </View>
 
-        <View style={styles.addMarkPic2}>  
-             <Image style={styles.addChoose}
-              source={require('../imgs/Choose.png')}/>
-          
+        <View style={styles.folderDropDown}>  
+              <Dropdown
+                label='Choose parent folder'
+                data={parentFolders}
+                onChangeText={this.onParentFolderSelectionChange}
+              />
         </View>
-
-        <View style={styles.addMarkPic2}> 
-             <Text style={styles.subFolde}></Text>      
-             
-         </View>
 
          <View
               style={styles.containerDivButs}>                      
@@ -110,9 +162,7 @@ render() {
                     </TouchableHighlight> 
               </View>
   
-   </View>
-        
-                          
+   </View>                
 </View>
     );
   }
