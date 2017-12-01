@@ -72,7 +72,7 @@ constructor(props) {
             popUpType:1,
             burgerIcon:require('../imgs/menuBut.png'),
             cloudToggle:true,
-            maxLimit: 15,
+            maxLimit: 9,
             clickedValue: "Home",
             selectedFolder: null,
             fullBookmarkLists: null
