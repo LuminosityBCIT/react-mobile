@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { Component } from "react";
+import { View, Text, StyleSheet, Image, PanResponder, Animated, TouchableOpacity} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -8,44 +8,106 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  text: {
-    fontSize: 13,
+  markGalleryText:{
+       marginTop: 10,
+       marginBottom: 10,
+       fontSize:20,
+       width:"80%",
   },
-  photo: {
-    height: 200,
-    width: 200,
-    borderRadius: 10,
-  }
+  markImg22:{
+         width:"80%",
+         height:200,
+         marginBottom: 50,
+  }, 
+      markImg:{
+           width:"100%",
+           height:200,
+          
+  }, 
 });
 
 //
-//  Online reference 
-//  https://medium.com/differential/react-native-basics-how-to-use-the-listview-component-a0ec44cf1fe8
+//  All Drag and Drop Reference
+//  https://blog.reactnativecoach.com/creating-draggable-component-with-react-native-132d30c27cb0
 //
-const BookMarkRowComponent = (props)  => {
-    //
-    //  https://apileap.com
-    //  100 free screenshot API per month
-    //
-    let imgSource ={ uri: "https://apileap.com/api/screenshot/v1/urltoimage?access_key=6597e3c2daf5432cb84991dbd18c09f8&url="+props.bookmark.url };
+class BookMarkRowComponent extends Component {
+  constructor(props) {
+    super(props);
 
-  return (
+    this.state = {
+      showDraggable: true,
+      dropAreaValues: null,
+      pan: new Animated.ValueXY(),
+      opacity: new Animated.Value(1)
+    };
+  }
+
+  componentWillMount() {
+    this._val = { x:0, y:0 }
+    this.state.pan.addListener((value) => this._val = value);
+
+    this.panResponder = PanResponder.create({
+        onStartShouldSetPanResponder: (e, gesture) => true,
+        onPanResponderGrant: (e, gesture) => {
+          this.state.pan.setOffset({
+            x: this._val.x,
+            y:this._val.y
+          })
+          this.state.pan.setValue({ x:0, y:0})
+        },
+        onPanResponderMove: Animated.event([ 
+          null, { dx: this.state.pan.x, dy: this.state.pan.y }
+        ]),
+        onPanResponderRelease: (e, gesture) => {
+          if (this.props.isEditing)
+          {
+
+            this.props.isDropZone(gesture, this.props.obj)
+            
+            //
+            //  Animation reference
+            //  https://moduscreate.com/blog/animated_drag_and_drop_with_react_native/
+            //
+            Animated.spring(            //Step 1
+                this.state.pan,         //Step 2
+                {toValue:{x:0,y:0}}     //Step 3
+            ).start();
+          }
+        }
+      });
+  }
+
+  openBrowser = () => {
+    this.props.openBrowser(this.props.url);
+  }
+
+  render() {
     
+    var panStyle = {
+      transform: this.state.pan.getTranslateTransform()
+    }
+    if (!this.props.isEditing)
+    {
+      panStyle = null;
+    }
 
-      <View style={styles.container}>
-        <Image style={styles.photo}
-            source={imgSource}
-          />
-          <Text style={styles.text}>
-              {`${props.bookmark.title}`}
-          </Text>
-      </View>
-  );
+    return (
+       <Animated.View
+        {...this.panResponder.panHandlers}
+        style={[panStyle, styles.markGalleryDisplay]} onLayout={this.checkVisible}>
+            <Text style={styles.markGalleryText}>
+                {this.props.obj.title}
+            </Text>            
+            <TouchableOpacity
+            style={styles.markImg22}
+            onPress={this.openBrowser}
+            activeOpacity={1}>
+                <Image style={styles.markImg}
+                source={{uri:this.props.url}}/>
+            </TouchableOpacity> 
+        </Animated.View>
+    );
+  }
 }
 
 export default BookMarkRowComponent
-
-
-
-
-

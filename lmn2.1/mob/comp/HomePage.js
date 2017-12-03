@@ -9,6 +9,7 @@ import Cloud from "./Cloud";
 import BrowsingPage from "./BrowsingPage";
 import SideBar from "./SideBar";
 import SearchPage from "./SearchPage";
+import BookMarkRowComponent from "./BookMarkRowComponent";
     
 //import CheckBox from 'react-native-checkbox';
 
@@ -66,7 +67,7 @@ constructor(props) {
             fbDatabase: null,
             userID:"",
             credential:"",
-            folderkey:"unorganized",
+            folderkey:null,
             //userlink:"",
             selectedLink:"http://www.google.ca",
             popUpType:1,
@@ -75,7 +76,11 @@ constructor(props) {
             maxLimit: 9,
             clickedValue: "Home",
             selectedFolder: null,
-            fullBookmarkLists: null
+            fullBookmarkLists: [],
+            isEditing: false,
+            folderLayouts: {},
+            currentlyVisibleItems: [],
+            currentlyEditingBookmark: null
             //browserVisibility:"'hidden'"
                
         };
@@ -233,6 +238,7 @@ constructor(props) {
 
 
     burgerOnPress = () => {
+
         if(this.state.burgerbuts == true) { 
             this.state.burgerbuts = false;    
             LayoutAnimation.spring();
@@ -285,6 +291,36 @@ constructor(props) {
             firebase.database().ref(bookmarkDbRef).set(snapshotArray);
         });
     }     
+
+    updateBookmark = (obj, originalBookmark) => {
+
+        console.log("original", JSON.stringify(originalBookmark));
+        console.log("new", JSON.stringify(obj));
+
+        var newBookmarkObj = obj;
+        var user = firebase.auth().currentUser;
+        var bookmarkDbRef = "users/"+user.uid+"/bookmarks";
+
+        firebase.database().ref(bookmarkDbRef).once('value').then(function(snapshot) {
+            var snapshotArray = [];
+
+            snapshot.forEach(function(childSnapshot) {
+            
+                var item = childSnapshot.val();
+                item.key = childSnapshot.key;
+                if (originalBookmark.title == childSnapshot.child('title').val() && originalBookmark.url == childSnapshot.child('url').val() && originalBookmark.folderkey == childSnapshot.child('folderkey').val())
+                {
+
+                }
+                else
+                {
+                    snapshotArray.push(item);
+                }
+            });
+            snapshotArray.unshift(newBookmarkObj);
+            firebase.database().ref(bookmarkDbRef).set(snapshotArray);
+        });
+    }
     
 
     submitFolder = (obj) => {
@@ -349,7 +385,7 @@ constructor(props) {
 
             console.log("List of bookmarks: " + JSON.stringify(filteredBookmarks));
             this.setState({
-                folderKey:selected_folder_key,
+                folderkey:selected_folder_key,
                 bookmarkLists:filteredBookmarks
             });
         }
@@ -376,7 +412,129 @@ constructor(props) {
         });
         firebase.database().ref(folderDbRefValue).set(snapshotArray);
     }
+
+    updateFolderLayout = (folderLayout, folder_key) => {
+        var folderLayouts = this.state.folderLayouts;
+        folderLayouts[folder_key] = folderLayout;
+
+        this.setState({
+            folderLayouts: folderLayouts
+        });
+    }
+
+    isDropZone = (dropCoordinate, bookmark) => {
+
+        var isDropZone = false;
+        var droppedFolderKey = "";
+
+        //
+        //  https://stackoverflow.com/questions/684672/how-do-i-loop-through-or-enumerate-a-javascript-object
+        //
+        for (var key in this.state.folderLayouts)
+        {
+            if (this.state.folderLayouts.hasOwnProperty(key))
+            {
+                var thisLayout = this.state.folderLayouts[key];
+
+                    console.log("====");
+                    console.log("layout", JSON.stringify(thisLayout));
+                    console.log("dropCoordinate", JSON.stringify(dropCoordinate));
+                    console.log("key", key);
+                    console.log("====");
+                //
+                // Double check if the drop coordinate is within the boundary of folder
+                // height of top bar should be added to the folder's y position
+                //
+                if ((thisLayout.y+86 < dropCoordinate.moveY && (thisLayout.y+86 + thisLayout.height) > dropCoordinate.moveY) && (thisLayout.x < dropCoordinate.moveX && (thisLayout.x + thisLayout.width) > dropCoordinate.moveX))
+                {
+                    isDropZone = true;
+                    droppedFolderKey = key;
+                }
+            }
+        }
+
+        if (isDropZone)
+        {
+            if (droppedFolderKey == "edit")
+            {
+                var folderName = "undefined";
+                this.state.folderLists.forEach(function(folder){
+                    if (folder['folder_key'] == bookmark.folderkey)
+                    {
+                        folderName = folder['folder_name'];
+                    }
+                });
+
+                bookmark['folder_name'] = folderName;
+
+                this.setState({
+                    popUpType: 2,
+                    currentlyEditingBookmark: bookmark
+                })
+                this.swithEditMode();
+
+                return true;
+            }
+            else 
+            {
+                var newBookmarkObj = bookmark;
+                var user = firebase.auth().currentUser;
+                var bookmarkDbRef = "users/"+user.uid+"/bookmarks";
+
+                var newBookmarkLists = [];
+                this.state.fullBookmarkLists.forEach(function(thisBookmark) {
+
+                    if (droppedFolderKey == "delete")
+                    {
+                        //
+                        //  if it is for delete, do not add to new array if url and title are the same
+                        //
+                        if ((thisBookmark.url != bookmark.url) && (thisBookmark.title != bookmark.title))
+                        {
+                            newBookmarkLists.push(thisBookmark);
+                        }
+                    }
+                    else {
+                        //
+                        //  if it is for updateing the folder, change the folder key if url and title are the same
+                        //
+                        if ((thisBookmark.url == bookmark.url) && (thisBookmark.title == bookmark.title))
+                        {
+                            thisBookmark.folderkey = droppedFolderKey;
+                        }
+
+                        newBookmarkLists.push(thisBookmark);
+                    }
+                });
+                firebase.database().ref(bookmarkDbRef).set(newBookmarkLists);
+                this.swithEditMode();
+            }
+        }
+
+        return isDropZone;
+    }
     
+    swithEditMode = () =>
+    {
+        this.setState({
+            isEditing: !this.state.isEditing
+        });
+
+        //
+        //  display burger view while editing
+        //
+        if (this.state.isEditing && !this.state.burgerbuts)
+        {
+            this.burgerOnPress();
+        }
+        //
+        //  When editing is done, hide the burger view
+        //
+        if (!this.state.isEditing && this.state.burgerbuts)
+        {
+            this.burgerOnPress();
+        }
+    }
     
     cloudState = (data) =>{
         this.setState({
@@ -413,6 +571,8 @@ constructor(props) {
     
     
     openBrowser = (data) => {
+        alert(data);
+
     //var link = JSON.stringify(data);
     
     //console.log(this.state.changeWindows);
@@ -440,42 +600,73 @@ constructor(props) {
     
     removeBookmark = ()=>{}
 
+    //
+    //  Use FlatList for rendering rows
+    //  https://facebook.github.io/react-native/docs/flatlist.html
+    //
+    _renderItem = ({item}) => (
+        <BookMarkRowComponent url={this.imgSource+item.url} obj={item} key={item.key} isEditing={this.state.isEditing} isDropZone={this.isDropZone} openBrowser={this.openBrowser}/>
+    );
+
+    //
+    //  Detect currently visible items since when editing mode enters the FlatList will be switched to View 
+    //  which will only disply the first few items in the list
+    //  If we do not do this, when entering the edit mode will result in always display the first few items
+    //  even if user enters the edit mode in the middle of the list
+    //
+    //  Stackoverflow reference: https://stackoverflow.com/a/45869559
+    //
+    _onViewableItemsChanged = (viewableItems, changed) => {
+        // console.log('Visible items are', viewableItems.viewableItems);
+        if (!this.state.isEditing)
+        {
+            this.setState({
+                currentlyVisibleItems: viewableItems.viewableItems
+            })
+        }
+    }
+
+
 render() {
     
     
-    //console.log("filter",filter);
-    
-    
-    var showBookmark = this.state.bookmarkLists.map((obj, i)=>{
-        return (
+    var listingBookmarks = this.state.bookmarkLists;
+    var showBookmark = null;
 
-            <View style={styles.markGalleryDisplay} key={i}>
+    if (this.state.isEditing)
+    {
+        // console.log('Visible items are', JSON.stringify(this.state.currentlyVisibleItems));
+        showBookmark = this.state.currentlyVisibleItems.map((obj, i)=>{
+            var bookmark = obj.item;            
+            return (
+                <BookMarkRowComponent url={this.imgSource+bookmark.url} obj={bookmark} key={i} isEditing={this.state.isEditing} isDropZone={this.isDropZone}/>                                        
+            ) 
+        });
+    }
+    else {
+        //
+        //  filtering the bookmark if selected folder key exists
+        //
+        if (this.state.fullBookmarkLists && this.state.folderkey)
+        {
+            listingBookmarks = [];
+            var selectedFolderKey = this.state.folderkey;
+
+            this.state.fullBookmarkLists.forEach(function(bookmark) {
             
-            <Text style={styles.markGalleryText}>
-              {obj.title}
-            </Text>
-            
-             <TouchableOpacity
-         style={styles.markImg22}
-         activeOpacity={1}
-         
-                onPress={this.openBrowser.bind(this, obj.url)}>
-            <Image style={styles.markImg}
-                source={{uri:this.imgSource+obj.url}}
-                
-            
-            />
-        </TouchableOpacity> 
-            
-            
-           
-            
-    
-            </View>
-            
-                                         
-        ) 
-    });
+                if (selectedFolderKey == bookmark.folderkey)
+                {
+                    listingBookmarks.push(bookmark);
+                }
+            });
+        }
+        showBookmark = <FlatList style={styles.markView2} data={listingBookmarks} renderItem={this._renderItem} onViewableItemsChanged={this._onViewableItemsChanged}/>
+    }
+
+
+// var flatList = <FlatList data={listingBookmarks} renderItem={this._renderItem}/>
+
+
 //<View 
 // style={styles.markGalleryDisplay}
 // key={i} >
@@ -549,6 +740,8 @@ render() {
                     folderkeyValue={this.state.folderkey}
                     webLink={this.webLink}
                     cloudState={this.cloudState}
+                    updateBookmark={this.updateBookmark}
+                    currentlyEditingBookmark = {this.state.currentlyEditingBookmark}
                     //userlink={this.state.userlink}
                 />            
               ) 
@@ -597,6 +790,20 @@ render() {
             
         }
 
+        //
+        //  if the bookmark is being edited, display bookmark row elements in flat view instaed of scrollview
+        //  Also, hide cloud button while editing
+        //
+        var bookmarkListElement = null;
+        if (this.state.isEditing)
+        {
+            bookmarkListElement = <View style={styles.markView2}>
+                {showBookmark}
+            </View>
+        }
+        else {
+            bookmarkListElement = showBookmark
+        }
 
     return (
     <View style={styles.container}>
@@ -606,7 +813,7 @@ render() {
             style={styles.containerTitle}>   
 
 
-
+    <View style={styles.titlePart1}>
         <TouchableOpacity
          style={styles.butImg2}
          activeOpacity={1}
@@ -615,10 +822,10 @@ render() {
              style={styles.butImg}
              source={this.state.burgerIcon} />
         </TouchableOpacity>  
+    </View>
 
 
-
-
+    <View style={styles.titlePart2}>
           <Image
              style={styles.homeBut}
              source={require('../imgs/folder_Icon.png')} />
@@ -627,10 +834,12 @@ render() {
             style={styles.homeButText}
                  >
                  { ((this.state.clickedValue).length > this.state.maxLimit) ? (((this.state.clickedValue).substring(0,this.state.maxLimit-3))+ '...'):this.state.clickedValue }</Text>
-
-
-                               
-                                                 
+    </View>
+<TouchableOpacity onPress={this.swithEditMode}>
+    <Text>Edit</Text>
+</TouchableOpacity>
+     <View style={styles.titlePart3}>                         
+      </View>                                           
                                                  
                                                         
                         </Image>             
@@ -644,15 +853,15 @@ render() {
                     folderLists={this.state.folderLists}
                     folderSelection={this.folderSelection}
                     removeFolder={this.removeFolder}
+                    isEditing={this.state.isEditing}
+                    updateFolderLayout={this.updateFolderLayout}
                 />
 
         </Image>
                  
         <View 
             style={[styles.markView, {flex:1, width: this.state.burgerw, left: this.state.burgerl}]} >  
-                <ScrollView style={styles.markView2}>
-                    {showBookmark}
-                </ScrollView>
+            {bookmarkListElement}
         </View>     
                 
         {windowDisplay} 
@@ -692,9 +901,10 @@ containerTitle: {
 },
  
 homeBut:{
-        position: "relative",
+       
         marginRight: 10,
-        top:4,
+       
+       
         width:40,
         height:40,
       
@@ -712,12 +922,10 @@ homeBut2:{
     
 butImg2:{
          
-         position: "relative",
-         left:-50,
-         top:3,
+        
          height:60,
          width:60,
-         marginRight: 15,
+        
         
 },
     
@@ -726,11 +934,34 @@ butImg:{ margin:12,
          width:37,    
 }, 
     
+titlePart1:{
+         height:"75%",
+         width:"20%",
+        
+        alignItems: 'center',
+        flexDirection:'row',
+}, 
+titlePart2:{
+         height:"75%",
+         width:"60%",
+        
+         alignItems: 'center',
+         justifyContent: 'center',
+         flexDirection:'row',
+}, 
+titlePart3:{ 
+         height:"75%",
+         width:"20%",
+         
+        alignItems: 'center',
+        flexDirection:'row',
+},     
+    
+    
+    
 homeButText:{
-           width:120,
+          
            height:25,
-           position: "relative",
-           
            top: 5, 
            fontSize: 20,
            fontWeight: 'bold',

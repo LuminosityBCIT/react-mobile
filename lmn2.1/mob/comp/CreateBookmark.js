@@ -29,6 +29,19 @@ import { Dropdown } from 'react-native-material-dropdown';
       
 componentDidMount(){
     this.inputFocus.focus();
+
+    if (this.props.currentlyEditingBookmark)
+    {
+      this.setState({
+        urlValue: this.props.currentlyEditingBookmark.url,
+        titleValue: this.props.currentlyEditingBookmark.title
+      });
+    }
+    else {
+      this.setState({
+        urlValue: this.props.webLink
+      })
+    }
   }      
       
       
@@ -66,40 +79,75 @@ folderfunction = (text) =>
         });
     }
 
+updateBookmark = () => {
+
+  if (this.state.titleValue != ""){
+
+    var folder_key = null;
+
+    if (this.state.selectedFolder)
+    {
+      folder_key = this.state.selectedFolder["folder_key"];
+    }
+    else {
+      folder_key = "unorganized";
+    }
+    //if (this.state.urlValue != ""){
+    var bookmark = {
+      title: this.state.titleValue,
+      url: this.state.urlValue,
+      folderkey: folder_key
+    }
+
+    this.props.updateBookmark(bookmark, this.props.currentlyEditingBookmark);
+    this.props.selectPopUp(1);
+    this.props.cloudState(true);
+    //}
+
+    //            else {
+    //                alert("url empty");
+    //            }
+  }
+
+  else {
+    alert("title empty");
+  }
+}
+
 addBookmark = () => {
 
-        if (this.state.titleValue != ""){
+  if (this.state.titleValue != ""){
 
-        var folder_key = null;
+    var folder_key = null;
 
-        if (this.state.selectedFolder)
-        {
-          folder_key = this.state.selectedFolder["folder_key"];
-        }
-        else {
-          folder_key = "unorganized";
-        }
-            //if (this.state.urlValue != ""){
-                var bookmark = {
-                    title: this.state.titleValue,
-                    url: this.props.webLink,
-                    folderkey: folder_key
-                }
-
-            this.props.submitBookmark(bookmark);
-            this.props.selectPopUp(1);
-            this.props.cloudState(true);
-            //}
-            
-//            else {
-//                alert("url empty");
-//            }
-        }
-    
-        else {
-            alert("title empty");
-        }
+    if (this.state.selectedFolder)
+    {
+      folder_key = this.state.selectedFolder["folder_key"];
     }
+    else {
+      folder_key = "unorganized";
+    }
+    //if (this.state.urlValue != ""){
+    var bookmark = {
+      title: this.state.titleValue,
+      url: this.state.urlValue,
+      folderkey: folder_key
+    }
+
+    this.props.submitBookmark(bookmark);
+    this.props.selectPopUp(1);
+    this.props.cloudState(true);
+    //}
+
+    //            else {
+    //                alert("url empty");
+    //            }
+  }
+
+  else {
+    alert("title empty");
+  }
+}
       
 cancelFunction = () =>{
       this.props.selectPopUp(1);
@@ -127,7 +175,38 @@ cancelFunction = () =>{
 
 render() {
     
+    var titleElement = null;
+    var dropdownElement = null;
 
+    // alert(JSON.stringify(this.props.currentlyEditingBookmark));
+
+    var urlValue = this.state.urlValue;
+    var titleValue = this.state.titleValue;
+    var submitButton = null;
+
+    if (this.props.currentlyEditingBookmark)
+    {
+        titleElement = (<Text style={styles.addMarkText}>Edit Bookmark</Text>)
+        dropdownElement = (<Dropdown label='Choose a folder' data={this.props.folderLists} onChangeText={this.onParentFolderSelectionChange} value={this.props.currentlyEditingBookmark.folder_name}/>);
+
+        submitButton = ( <TouchableHighlight
+                         style={styles.containerDivBut2}
+                         onPress={this.updateBookmark}>
+                             <Text style={styles.containerDivButText}>
+                              Save</Text>
+                        </TouchableHighlight> );
+    }
+    else {
+        titleElement = (<Text style={styles.addMarkText}>Add Bookmark</Text>) 
+        dropdownElement = (<Dropdown label='Choose a folder' data={this.props.folderLists} onChangeText={this.onParentFolderSelectionChange} />);
+
+        submitButton = ( <TouchableHighlight
+                 style={styles.containerDivBut2}
+                 onPress={this.addBookmark}>
+                     <Text style={styles.containerDivButText}>
+                      Save</Text>
+                </TouchableHighlight> );
+    }
     
     return (
         
@@ -141,15 +220,14 @@ render() {
         
         
         
-                   <Text style={styles.addMarkText}>
-                 Add Bookmark</Text>
+                {titleElement}
         
         
                  <View style={styles.addMarkPic1}>   
                      <Image style={styles.newLink}
                       source={require('../imgs/bmkBut.png')}/>
                      <View style={styles.myLinks}>  
-                    <TextInput type="text" onChangeText={this.urlfunction} placeholder="url" value={this.props.webLink} />
+                    <TextInput type="text" onChangeText={this.urlfunction} placeholder="url" defaultValue={urlValue} />
                      </View>
                  </View>
         
@@ -166,17 +244,13 @@ render() {
                             type="text" 
                             onChangeText={this.titlefunction} 
                             placeholder="title"
-                            
+                            defaultValue={titleValue}
                             />
                   
                 </View>
 
                 <View style={styles.folderDropDown1}>  
-                      <Dropdown
-                        label='Choose a folder'
-                        data={this.props.folderLists}
-                        onChangeText={this.onParentFolderSelectionChange}
-                      />
+                  {dropdownElement}
                 </View>                
            
             
@@ -188,13 +262,7 @@ render() {
                              <Text style={styles.containerDivButText}>
                              Cancel</Text>
                         </TouchableHighlight> 
-
-                        <TouchableHighlight
-                         style={styles.containerDivBut2}
-                         onPress={this.addBookmark}>
-                             <Text style={styles.containerDivButText}>
-                              Save</Text>
-                        </TouchableHighlight> 
+                        {submitButton}
                   </View>
   
    </View>

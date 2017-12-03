@@ -15,7 +15,10 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
       alert("Image Clicked!!!");
     }
   
-           
+    updateDropZoneValues(event, folder_key)
+    {
+      this.props.updateFolderLayout(event.nativeEvent.layout, folder_key);
+    }
    
     render() {
 
@@ -57,8 +60,18 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
         {
             deleteButton = <Button title={"X"}  onPress={this.props.removeFolder.bind(this, obj.key, i)}/>;
         }
+
+        if (this.props.isEditing)
+        {
+          deleteButton = null;
+        }
+
+            //
+            //  passing additional parameters on onLayout event
+            //  https://stackoverflow.com/questions/30203154/get-size-of-a-view-in-react-native
+            //
             return (            
-        <View style={styles.sidedivPic} key={i}>
+        <View style={styles.sidedivPic} key={i} onLayout={(event) => {this.updateDropZoneValues(event, obj.folder_key)}}>
             <View style={styles.sidedivSubPic}>   
                 {imgElement} 
                 <TouchableHighlight
@@ -71,17 +84,48 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
             ) 
       });
 
+      var trashIcon = null;
+      var editIcon = null;
+
+      if (this.props.isEditing)
+      {
+      trashIcon = (<View style={styles.editView} onLayout={(event) => {this.updateDropZoneValues(event, "delete")}}>
+                <Image style={styles.editViewImage} source={require('../imgs/trash.png')} />
+              </View>)
+      editIcon = (
+              <View style={styles.editView} onLayout={(event) => {this.updateDropZoneValues(event, "edit")}}>
+                <Image style={styles.editViewImage} source={require('../imgs/editBookmark.png')} />
+              </View>   )
+      }
+
       return (
-          
-          <ScrollView style={styles.sideScrollDiv}>
-              {showFolder}
-          </ScrollView>                            
+          <View>
+            <ScrollView style={styles.sideScrollDiv}>
+                {showFolder}
+            </ScrollView>        
+            {trashIcon}
+            {editIcon}   
+          </View>
       );
   }
 };
 
 const styles = StyleSheet.create({
     
+editViewImage : {
+   alignItems: "center",
+},
+
+editView : {
+  width: '100%',
+   alignItems: "center",
+   marginBottom: 20
+},
+
+editViewContainer : {
+   alignItems: "center",
+},
+
 folderImgView : {
     width: 40,
     height: 30
@@ -105,13 +149,11 @@ sidediv:{
          height:"100%",
          width:"65%",
          bottom:0,
-       
-     
-  }, 
+}, 
 
 sideScrollDiv:{
     
-      height:"100%",
+      height:"70%",
          width:"92%",
 },    
     
