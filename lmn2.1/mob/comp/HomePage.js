@@ -320,6 +320,9 @@ constructor(props) {
             snapshotArray.unshift(newBookmarkObj);
             firebase.database().ref(bookmarkDbRef).set(snapshotArray);
         });
+        this.setState({
+            currentlyEditingBookmark: null
+        });
     }
     
 
@@ -571,8 +574,6 @@ constructor(props) {
     
     
     openBrowser = (data) => {
-        alert(data);
-
     //var link = JSON.stringify(data);
     
     //console.log(this.state.changeWindows);

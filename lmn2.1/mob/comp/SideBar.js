@@ -153,7 +153,7 @@ sidediv:{
 
 sideScrollDiv:{
     
-      height:"70%",
+      height:"50%",
          width:"92%",
 },    
     

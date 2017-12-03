@@ -80,7 +80,6 @@ folderfunction = (text) =>
     }
 
 updateBookmark = () => {
-
   if (this.state.titleValue != ""){
 
     var folder_key = null;
@@ -102,11 +101,7 @@ updateBookmark = () => {
     this.props.updateBookmark(bookmark, this.props.currentlyEditingBookmark);
     this.props.selectPopUp(1);
     this.props.cloudState(true);
-    //}
 
-    //            else {
-    //                alert("url empty");
-    //            }
   }
 
   else {
@@ -193,7 +188,7 @@ render() {
                          style={styles.containerDivBut2}
                          onPress={this.updateBookmark}>
                              <Text style={styles.containerDivButText}>
-                              Save</Text>
+                              Update</Text>
                         </TouchableHighlight> );
     }
     else {
