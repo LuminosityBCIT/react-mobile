@@ -26,6 +26,8 @@ cancelFunction = () =>{
       this.props.cloudState(true);
   }
 
+
+
 searchBookmark = (data) => {
     this.setState({
         searchInput:data
@@ -106,12 +108,15 @@ render() {
                 </View>
 
           <View style={styles.searchDisplay}>   
-          <ScrollView style={styles.searchDisplay2}>   
-            
-              {showSearchedBookmarks}
+                  <ScrollView style={styles.searchDisplay2}>   
 
-         </ScrollView>
-        
+                      {showSearchedBookmarks}
+
+                 </ScrollView>
+
+         
+                
+         </View>
             <View
               style={styles.containerDivButs}>                      
                     <TouchableHighlight
@@ -119,15 +124,13 @@ render() {
                      onPress ={this.cancelFunction}>
                          <Text style={styles.containerDivButText}>
                          Cancel</Text>
-                    </TouchableHighlight> 
+             </TouchableHighlight> 
 
                      
-              </View>    
-                
-         </View>
-
+              </View>   
    </View>
-        
+             <TouchableOpacity  style={styles.containerRemove} onPress={this.cancelFunction}>        
+            </TouchableOpacity>
                           
 </View>
     );

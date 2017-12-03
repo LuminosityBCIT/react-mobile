@@ -133,20 +133,33 @@ render() {
         
         
 <View
- style={styles.containerAdd}>
+ style={styles.containerAdd} >
     
-        
+
    <View
     style={styles.containerDiv}>
         
-                <Text style={styles.addMarkText}>
+        
+        
+                   <Text style={styles.addMarkText}>
                  Add Bookmark</Text>
         
-                <View style={styles.addMarkPic1}> 
-                     <Image style={styles.addTitle}
-                      source={require('../imgs/title.png')}/>
-                     <View
-                      style={styles.addMarkInp2}>
+        
+                 <View style={styles.addMarkPic1}>   
+                     <Image style={styles.newLink}
+                      source={require('../imgs/bmkBut.png')}/>
+                     <View style={styles.myLinks}>  
+                    <TextInput type="text" onChangeText={this.urlfunction} placeholder="url" value={this.props.webLink} />
+                     </View>
+                 </View>
+        
+              
+        
+            
+        
+                <View style={styles.addMarkPic}> 
+                   
+                   
                            <TextInput
                             ref={(titleInput) => { this.inputFocus = titleInput; }}
                             style={styles.addMarkInp}  
@@ -155,24 +168,17 @@ render() {
                             placeholder="title"
                             
                             />
-                     </View>   
+                  
                 </View>
 
-                <View style={styles.folderDropDown}>  
+                <View style={styles.folderDropDown1}>  
                       <Dropdown
                         label='Choose a folder'
                         data={this.props.folderLists}
                         onChangeText={this.onParentFolderSelectionChange}
                       />
-                </View>
-                
-                <View style={styles.addMarkPic1}>   
-                     <Image style={styles.addSubFolder}
-                      source={require('../imgs/subFolder.png')}/>
-                     <View style={styles.addMarkPic}>  
-                    <TextInput type="text" onChangeText={this.urlfunction} placeholder="url" value={this.props.webLink} />
-                     </View>
-                 </View>
+                </View>                
+           
             
                  <View
                   style={styles.containerDivButs}>                      
@@ -193,9 +199,11 @@ render() {
   
    </View>
         
-                          
+     <TouchableOpacity  style={styles.containerRemove} onPress={this.cancelFunction}>        
+            </TouchableOpacity>
 </View>
     );
   }
 };
 
+//{this.props.webLink}

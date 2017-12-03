@@ -126,7 +126,7 @@ render() {
 
         <View style={styles.addMarkPic1}> 
              <Image style={styles.addTitle}
-              source={require('../imgs/title.png')}/>
+              source={require('../imgs/folder_Icon.png')}/>
              <View
               style={styles.addMarkInp2}>
                    <TextInput
@@ -162,7 +162,10 @@ render() {
                     </TouchableHighlight> 
               </View>
   
-   </View>                
+   </View>    
+
+     <TouchableOpacity  style={styles.containerRemove} onPress={this.cancelFunction}>        
+    </TouchableOpacity>
 </View>
     );
   }

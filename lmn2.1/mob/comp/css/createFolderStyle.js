@@ -26,17 +26,31 @@ containerAdd: {
         flexDirection: 'column',
         alignItems: 'center',
 },
+    
+containerRemove:{
+        position:"absolute",
+        top:0,
+        left:0,
+        flex: 1,
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
+        zIndex:-19,      
+},
 
 containerDiv: {  
-       
+        position: "absolute",
         width: "90%",
         height: 450,
+        top:"5%",
         backgroundColor:"white",
         flexDirection: 'column',
         alignItems: 'center',
         borderRadius: 4,
         borderWidth: 2,
-        borderColor: '#787878',
+        borderColor: "rgba(255, 255, 255, 0.3)",
 },
     
     
@@ -52,8 +66,8 @@ addMarkText: {
         fontSize: 20,
         fontWeight: 'bold',
         backgroundColor:"white",
-        marginTop:60,
-        marginBottom:20,
+        marginTop:25,
+        marginBottom:10,
 },
     
 addMarkPic1: {
@@ -75,10 +89,10 @@ addMarkPic: {
     
     
 addTitle: {
-       marginTop: 15, 
+       marginTop: 5, 
        marginLeft: 0,
-       width: 40,
-       height: 14,
+       width: 50,
+       height: 40,
        margin:10,
 },       
     
@@ -114,9 +128,11 @@ addMarkInp2: {
 },     
 
 containerDivButs: {
-        top:"5%",
+       
+        marginTop:40,
         width: "90%",
         height: "10%",
+        top:"28%"
 },
 
 containerDivBut1: {

@@ -1,10 +1,69 @@
 import {StyleSheet} from 'react-native';
 
 module.exports = StyleSheet.create({
-
-folderDropDown: {
-       width: "80%"
+   
+containerDiv: {  
+        position: "absolute",
+        width: "90%",
+        height: 450,
+        top:"5%",
+        backgroundColor:"white",
+        flexDirection: 'column',
+        alignItems: 'center',
+        borderRadius: 4,
+        borderWidth: 2,
+        borderColor: "rgba(255, 255, 255, 0.3)",
+       
 },   
+
+containerDivButs: {
+    
+        marginTop:40,
+        width: "90%",
+        height: "10%",
+},     
+
+addMarkText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        backgroundColor:"white",
+        marginTop:25,
+        marginBottom:10,
+},
+    
+folderDropDown1: {
+       width: "80%",
+       height: 50,
+},   
+
+folderDropDown2: {
+       marginTop: 20,
+       width: "80%",
+       height: 50,
+}, 
+    
+addMarkPic: {
+     
+      borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#787878',
+       marginTop: 20,
+       width: "80%",
+       height: 50,
+      
+      
+},  
+    
+addMarkInp2: {
+       width: "80%",
+       height: 50,
+       marginBottom:20,
+       borderRadius: 4,
+        borderWidth: 2,
+        borderColor: '#787878',
+},   
+
+   
 
 containerHead:{
          position: 'absolute',
@@ -27,45 +86,46 @@ containerAdd: {
         alignItems: 'center',
 },
 
-containerDiv: {  
-       
-        width: "90%",
-        height: 450,
-        backgroundColor:"white",
+    containerRemove:{
+        position:"absolute",
+        top:0,
+        left:0,
+        flex: 1,
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center',
         flexDirection: 'column',
         alignItems: 'center',
-        borderRadius: 4,
-        borderWidth: 2,
-        borderColor: '#787878',
+        zIndex:-19,      
 },
-    
-    
-    
-    
-addMarkText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        backgroundColor:"white",
-        marginTop:60,
-        marginBottom:20,
-},
-    
-addMarkPic1: {
+
+ addMarkPic1: {
       marginTop: 20,
        width: "80%",
        height: 50,
        flexDirection: 'row',
-},
+},   
     
-addMarkPic: {
+ newLink: {
+       width: 50,
+      height: 50,
+
+},     
+    
+
+    myLinks: {
        left:0,
        width: "78%",
        height: "100%",
        marginBottom:20,
        borderRadius: 4,
-       borderWidth: 2,
+       borderWidth: 1,
        borderColor: '#787878',
-},    
+       marginLeft: 6
+}, 
+
+    
+ 
     
     
 addTitle: {
@@ -83,13 +143,7 @@ addFolder: {
        marginLeft: 0,
 },   
     
-addSubFolder: {
-       width: 40,
-      height: 22,
-       margin:10,
-     marginLeft: 0,
-},     
-    
+
     
     
 addMarkInp: {  
@@ -107,11 +161,7 @@ addMarkInp2: {
         borderColor: '#787878',
 },     
 
-containerDivButs: {
-        top:"5%",
-        width: "90%",
-        height: "10%",
-},
+
 
 containerDivBut1: {
         position: "relative",

@@ -15,31 +15,45 @@ containerSearch: {
         alignItems: 'center',
 },
 
+containerRemove:{
+        position:"absolute",
+        top:0,
+        left:0,
+        flex: 1,
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
+        zIndex:-19,      
+},
+    
 containerSearchDiv: {  
-       
+        position: "absolute",
         width: "90%",
-        height: Dimensions.get("window").height*0.7,
+        height: 450,
+        top:"5%",
         backgroundColor:"white",
         flexDirection: 'column',
         alignItems: 'center',
         borderRadius: 4,
         borderWidth: 2,
-        borderColor: '#787878',
+        borderColor: "rgba(255, 255, 255, 0.3)",
 },
     
 searchText: {
         fontSize: 20,
         fontWeight: 'bold',
         backgroundColor:"white",
-        marginTop:40,
-        marginBottom:20,
+        marginTop:25,
+        marginBottom:10,
 },
     
   
 searchPic1: {
        marginTop: 10,
-       marginBottom: 20,
-       width: "80%",
+       marginBottom: 15,
+       width: "70%",
        height: 50,
        flexDirection: 'row',
 },
@@ -48,6 +62,7 @@ searchInp2: {
        flexDirection: 'row',
        width: "100%",
        height: 50,
+       top:"0%",
        marginBottom:20,
        borderRadius: 4,
         borderWidth: 2,
@@ -109,9 +124,10 @@ searchMarkImg:{
 },     
     
  searchDisplay:{
-         width:"100%",
-         height:"60%",
-        alignItems: 'center',
+         width:"80%",
+         height:"50%",
+         left:"6%",
+         alignItems: 'center',
 },        
     
  searchDisplay2:{
@@ -122,15 +138,18 @@ searchMarkImg:{
 },      
     
 containerDivButs: {
-        top:"5%",
+        marginTop:5,
+        top: "1%",
         width: "90%",
-        height: "15%",
+        height: "10%",
+        alignItems: 'center',
+
 },
 
 containerDivBut1: {
-        position: "relative",
+      
         top:0,
-        left:"10%",
+      
         backgroundColor:"#FF6633",
         width: "30%",
         height: "100%",
