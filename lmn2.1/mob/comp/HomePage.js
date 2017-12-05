@@ -792,6 +792,19 @@ render() {
         }
 
         //
+        //  if isEditing is true, hide cloud toggle
+        //
+        var editButtonText = "";
+        if (this.state.isEditing)
+        {
+            cloudDisplay = null;
+            editButtonText = "Cancel";
+        }
+        else {
+            editButtonText = "Edit";
+        }
+
+        //
         //  if the bookmark is being edited, display bookmark row elements in flat view instaed of scrollview
         //  Also, hide cloud button while editing
         //
@@ -837,7 +850,7 @@ render() {
                  { ((this.state.clickedValue).length > this.state.maxLimit) ? (((this.state.clickedValue).substring(0,this.state.maxLimit-3))+ '...'):this.state.clickedValue }</Text>
     </View>
 <TouchableOpacity onPress={this.swithEditMode}>
-    <Text>Edit</Text>
+    <Text>{editButtonText}</Text>
 </TouchableOpacity>
      <View style={styles.titlePart3}>                         
       </View>                                           

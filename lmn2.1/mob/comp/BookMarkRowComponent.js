@@ -91,20 +91,38 @@ class BookMarkRowComponent extends Component {
       panStyle = null;
     }
 
+    var imageElement = null;
+
+    //
+    //  If it is in edit mode, do not make the image clickable
+    //
+    if (this.props.isEditing)
+    {    
+            imageElement = (<View style={styles.markImg22}>
+                <Image style={styles.markImg} source={{uri:this.props.url}}/>
+            </View>)
+    }
+    //
+    //  If it is not in edit mode, make the image clickable and call openBrower
+    //
+    else {    
+            imageElement = (<TouchableOpacity
+            style={styles.markImg22}
+            onPress={this.openBrowser}
+            activeOpacity={1}>
+                <Image style={styles.markImg}
+                source={{uri:this.props.url}}/>
+            </TouchableOpacity>)
+    }
+
     return (
        <Animated.View
         {...this.panResponder.panHandlers}
         style={[panStyle, styles.markGalleryDisplay]} onLayout={this.checkVisible}>
             <Text style={styles.markGalleryText}>
                 {this.props.obj.title}
-            </Text>            
-            <TouchableOpacity
-            style={styles.markImg22}
-            onPress={this.openBrowser}
-            activeOpacity={1}>
-                <Image style={styles.markImg}
-                source={{uri:this.props.url}}/>
-            </TouchableOpacity> 
+            </Text>        
+            {imageElement}
         </Animated.View>
     );
   }
