@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Stylesheet, Text, View, TextInput, Button, Image, WebView, Linking, TouchableOpacity, AsyncStorage } from 'react-native';
+import { Stylesheet, Text, View, TextInput, Button, Image, WebView, Linking, TouchableOpacity } from 'react-native';
 import Expo from "expo";
 
 
@@ -11,7 +11,8 @@ export default class Gcontrols extends React.Component {
         super(props);
         
         this.state = {
-            loginState:1
+            num:0,
+            itemName:""
         }
         
         this.login = this.login.bind(this);
@@ -19,44 +20,9 @@ export default class Gcontrols extends React.Component {
         
     }
     
-    
-//   componentWillMount(){
-//       
-//       AsyncStorage.getItem('idToken').then((res) => {
-//        this.props.setIdToken(res);        
-//        //console.log("idToken got" + res);   
-//        
-//        });
-//
-//        AsyncStorage.getItem('accessToken').then((res) => {
-//            this.props.setIdToken(res);
-//        //console.log("accToken got" + res);   
-//
-//        });
-//       
-//   } 
-//    
-//componentDidMount(){
-//    if (this.props.idToken != "" && this.props.accessToken != "" ){
-//        this.props.changePage("homepage");
-//    }
-//}
-    
-    
     //GoogleSignin.signIn()
     
     login = async() => {
-        
-        setTimeout(()=>{
-                this.setState({
-            loginState:2
-        })    
-        }, 2000)
-        
-//        this.setState({
-//            loginState:2
-//        })
-        
         try {
             const result = await Expo.Google.logInAsync({
                 androidClientId: "314360845682-p3kvt4iogn8d1s4bli7b7bb549vqaooi.apps.googleusercontent.com",
@@ -66,26 +32,19 @@ export default class Gcontrols extends React.Component {
                 if(user.type == "success"){
                     //var token = resp.token;
                     
-                    console.log("login success");
-                    console.log(user);
                     
-                    var page = "homepage";
-                    
-                    
-                    //console.log(user);
+                    var page = "unorganized";
+//                    console.log(resp);
                     
                     //var cloud = "true";
                     
                     //this.props.showCloud(cloud);
                     
-                    AsyncStorage.setItem('idToken', user.idToken);
-                    AsyncStorage.setItem('accessToken', user.accessToken);
-                    
                     this.props.setIdToken(user.idToken);
                     this.props.setAccessToken(user.accessToken);
                     this.props.changePage(page);
                     
-                    //console.log(user);
+                    console.log(user);
                     
                 }
             })
@@ -96,7 +55,6 @@ export default class Gcontrols extends React.Component {
             
         }
         
-        
     }
     
     signup(){
@@ -106,58 +64,37 @@ export default class Gcontrols extends React.Component {
     
     render(){
         
-        var loginDisplay = null;
-        
-        if (this.state.loginState == 1){
-            loginDisplay = (
-                
-                <View>
-                <View style={{justifyContent: 'center',
-                alignItems: 'center'}}>
-            
-                    <Image style={{width:150, height:180, marginBottom:70}} source={require('../imgs/logo.png')}
-                    />
-                    
-                </View>
-                    
-                    
-                    <TouchableOpacity style={{width: 300, height: 55,  marginTop:10, marginBottom:15, backgroundColor:"#BADADD", padding:10, borderRadius: 4,
-        borderWidth: 0.5,
-        borderColor: '#00263A', }} onPress={this.login}>
-                     
-                    <Image style={{top:13, left: 40, position:'absolute', width:30, height:30}} source={require('../imgs/google.png')} />
-                    
-                    <Text style={{top:15, right: 20, position:'absolute', width:200, height:30, fontSize: 20, color: "#00263A"}} >Log In With Google</Text>
-                
-                    </TouchableOpacity> 
-                
-            
-            </View>
-            
-            )
-        }
-        
-        else if (this.state.loginState == 2){
-            loginDisplay = (
-                
-                <View style={{justifyContent: 'center',
-                alignItems: 'center'}}>
-            
-                    <Image style={{width:150, height:180, marginBottom:70}} source={require('../imgs/logo.png')}
-                    />
-                
-                
-                    <Text>Please wait while we hack your phone...</Text>
-                </View>
-            )
-        }
-        
         
     
         return(
             
             <View>
-                {loginDisplay}
+                <View style={{justifyContent: 'center',
+                alignItems: 'center'}}>
+            
+                    <Image style={{width:150, height:180, marginBottom:70}} source={require('../imgs/logo.png')}
+                    />
+                    
+                </View>
+                    
+                    
+                    <TouchableOpacity style={{width: 300, height: 55,  marginTop:10, marginBottom:15, backgroundColor:"#4C8BF5", padding:10}} onPress={this.login}>
+                     
+                    <Image style={{top:13, left: 15, position:'absolute', width:30, height:30}} source={require('../imgs/google_login.png')} />
+                    
+                    <Text style={{top:15, right: 32, position:'absolute', width:200, height:30, fontSize: 20, color: "white"}} >Login With Google</Text>
+                
+                    </TouchableOpacity> 
+                
+                
+                <TouchableOpacity style={{width: 300, height: 55,  marginTop:15, marginBottom:10, backgroundColor:"#4C8BF5", padding:10}} onPress={this.login}>
+                     
+                    <Image style={{top:13, left: 15, position:'absolute', width:30, height:30}} source={require('../imgs/google_login.png')} />
+                    
+                    <Text style={{top:15, right: 90, position:'absolute', width:100, height:30, fontSize: 20, color: "white"}} >Sign Up</Text>
+                
+                    </TouchableOpacity> 
+            
             </View>
         
         );       

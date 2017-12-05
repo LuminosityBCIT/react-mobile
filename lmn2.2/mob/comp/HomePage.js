@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import * as firebase from 'firebase';
-import { ListView, StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpacity, TextInput, WebView, ScrollView, NativeModules, LayoutAnimation, FlatList, Animated, Easing } from 'react-native';
+import { ListView, StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpacity, TextInput, WebView, ScrollView, NativeModules, LayoutAnimation, FlatList, Animated, Easing, AsyncStorage } from 'react-native';
 
 import CreateBookmark from "./CreateBookmark";
 import CreateFolder from "./CreateFolder";
@@ -92,10 +92,10 @@ constructor(props) {
             sideP2H: "90%",
             sideP3H: "0%",
             sideP4H: "0%",
-            editButs: true,
             //editFunction: this.swithEditMode()
                
         };
+        this.editButs = false;
         this.webLink = "https://www.google.ca/";
         this.imgSource = "https://apileap.com/api/screenshot/v1/urltoimage?access_key=6597e3c2daf5432cb84991dbd18c09f8&url=";
     
@@ -255,18 +255,29 @@ constructor(props) {
         
         this.setState({bookmarkImgH: this.state.sideDivl = 200})
         
+        AsyncStorage.getItem('idToken').then((res) => console.log("idT", res));
+        AsyncStorage.getItem('accessToken').then((res) => console.log("acT", res));
+        
     }
 
     editBookmark = () => {
       
-       if(this.state.editButs == true) { 
-            this.state.editButs = false;    
+       if(this.editButs == true) { 
+            
+            this.editButs = false;    
             LayoutAnimation.spring();
-            this.setState({sideP1H: this.state.sideP1H = "10%"})
-            this.setState({sideP2H: this.state.sideP2H = "90%"}) 
-            this.setState({sideP3H: this.state.sideP3H = "0%"})
-            this.setState({sideP4H: this.state.sideP4H = "0%"})
-            this.setState({isEditing: !this.state.isEditing})
+           
+            this.setState({
+                sideP1H: this.state.sideP1H = "10%",
+                sideP2H: this.state.sideP1H = "90%",
+                sideP3H: this.state.sideP1H = "0%",
+                sideP4H: this.state.sideP1H = "0%",
+                isEditing: !this.state.isEditing,
+                cloudToggle: true
+                
+            })
+            
+            
             
             //CANT DO BOTH
 //            this.setTimeout( () => {
@@ -275,18 +286,27 @@ constructor(props) {
 //            this.setState({
 //            isEditing: !this.state.isEditing
 //        });
-       this.swithEditMode();
+       //this.swithEditMode();
         
             
         }
         else { 
-            this.state.editButs = true;    
+            
+            this.editButs = true;    
             LayoutAnimation.spring();
-           
-            this.setState({sideP1H: this.state.sideP1H = "10%"})
-            this.setState({sideP2H: this.state.sideP2H = "50%"}) 
-            this.setState({sideP3H: this.state.sideP3H = "20%"})
-            this.setState({sideP4H: this.state.sideP4H = "20%"})
+            
+            this.setState({
+                sideP1H: this.state.sideP1H = "10%",
+                sideP2H: this.state.sideP1H = "50%",
+                sideP3H: this.state.sideP1H = "20%",
+                sideP4H: this.state.sideP1H = "20%",
+                isEditing: !this.state.isEditing,
+                cloudToggle: false
+            })
+            
+            
+            
+            
             
             //this.swithEditMode();
             
@@ -582,7 +602,7 @@ constructor(props) {
                     popUpType: 2,
                     currentlyEditingBookmark: bookmark
                 })
-                this.swithEditMode();
+                //this.swithEditMode();
 
                 return true;
             }
@@ -618,34 +638,34 @@ constructor(props) {
                     }
                 });
                 firebase.database().ref(bookmarkDbRef).set(newBookmarkLists);
-                this.swithEditMode();
+                //this.swithEditMode();
             }
         }
 
         return isDropZone;
     }
     
-    swithEditMode = () =>
-    {
-        this.setState({
-            isEditing: !this.state.isEditing
-        });
-
-        //
-        //  display burger view while editing
-        //
-//            if (this.state.isEditing && !this.state.burgerbuts)
-//            {
-//                this.burgerOnPress();
-//            }
-        //
-        //  When editing is done, hide the burger view
-        //
-//            if (!this.state.isEditing && this.state.burgerbuts)
-//            {
-//                this.burgerOnPress();
-//            }
-    }
+//    swithEditMode = () =>
+//    {
+//        this.setState({
+//            isEditing: !this.state.isEditing
+//        });
+//
+//        //
+//        //  display burger view while editing
+//        //
+////            if (this.state.isEditing && !this.state.burgerbuts)
+////            {
+////                this.burgerOnPress();
+////            }
+//        //
+//        //  When editing is done, hide the burger view
+//        //
+////            if (!this.state.isEditing && this.state.burgerbuts)
+////            {
+////                this.burgerOnPress();
+////            }
+//    }
     
     cloudState = (data) =>{
         this.setState({
@@ -745,13 +765,20 @@ constructor(props) {
     logOut = () =>{
         AsyncStorage.removeItem('idToken');
         AsyncStorage.removeItem('accessToken');
-        this.props.changePage("login");
+        
+        AsyncStorage.getItem('idToken').then((res) => console.log("idT", res));
+        AsyncStorage.getItem('accessToken').then((res) => console.log("acT", res));
+        
+        
+        this.props.changePage("");
+        
         
     }
     
     
 render() {
     
+    console.log("isedit", this.state.isEditing);
     
     var listingBookmarks = this.state.bookmarkLists;
     var showBookmark = null;
