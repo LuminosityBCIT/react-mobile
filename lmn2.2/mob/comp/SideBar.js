@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 
-import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpacity, TextInput, WebView, ScrollView, NativeModules, LayoutAnimation, Picker, Animated, Easing} from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpacity, TextInput, WebView, ScrollView, NativeModules, LayoutAnimation, Picker} from 'react-native';
 
 
   export default class SideBar extends React.Component {
       
-    
     constructor(props){
       super(props);  
       this.callFun = this.callFun.bind(this);
@@ -47,10 +46,10 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
         //
         if (obj['parent_key'])
         {
-            imgElement = <TouchableHighlight underlayColor={"#f1f1f1"} onPress={this.props.folderSelection.bind(this, obj.key, i, obj.folder_name)} style={styles.folderImgView}><Image style={styles.subFolderImg} source={require('../imgs/subFolder.png')} /></TouchableHighlight>;
+            imgElement = <View style={styles.folderImgView}><Image style={styles.subFolderImg} source={require('../imgs/subFolder.png')} /></View>;
         }
         else {
-            imgElement = <TouchableHighlight underlayColor={"#f1f1f1"} onPress={this.props.folderSelection.bind(this, obj.key, i, obj.folder_name)} style={styles.folderImgView}><Image style={styles.folderImg} source={require('../imgs/folder_Icon.png')} /></TouchableHighlight>;
+            imgElement = <View style={styles.folderImgView}><Image style={styles.folderImg} source={require('../imgs/folder.png')} /></View>;
         }
 
         //
@@ -59,27 +58,13 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
         var deleteButton = null;
         if (obj['folder_key'] != "unorganized")
         {
-            deleteButton = <TouchableOpacity 
-            onPress={this.props.removeFolder.bind(this, obj.key, i)} 
-            style={styles.delBut22}><Animated.View
-            style={{ width: 40, height: 40, transform: [{scale: this.props.springValue}] }}>
-                <Image style={styles.delBut} source={require('../imgs/delBut.png')} /></Animated.View>
-            </TouchableOpacity>;
+            deleteButton = <Button title={"X"}  onPress={this.props.removeFolder.bind(this, obj.key, i)}/>;
         }
 
         if (this.props.isEditing)
         {
-          deleteButton = <TouchableOpacity 
-            onPress={this.props.removeFolder.bind(this, obj.key, i)} 
-            style={styles.delBut22}><Animated.View
-            style={{ width: 40, height: 40, transform: [{scale: this.props.springValue}] }}>
-                <Image style={styles.delBut} source={require('../imgs/delBut.png')} /></Animated.View>
-            </TouchableOpacity>;
+          deleteButton = null;
         }
-            
-        else {
-          deleteButton = null;    
-        }    
 
             //
             //  passing additional parameters on onLayout event
@@ -87,10 +72,9 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
             //
             return (            
         <View style={styles.sidedivPic} key={i} onLayout={(event) => {this.updateDropZoneValues(event, obj.folder_key)}}>
-            
             <View style={styles.sidedivSubPic}>   
                 {imgElement} 
-                <TouchableHighlight style={styles.folderStyle} underlayColor={"#f1f1f1"}
+                <TouchableHighlight
                 id="folderBtn" onPress={this.props.folderSelection.bind(this, obj.key, i, obj.folder_name)}>
                 <Text style={styles.folderText}>{ ((obj.folder_name).length > this.props.maxLimit) ? (((obj.folder_name).substring(0,this.props.maxLimit-3))+ '...'):obj.folder_name } </Text>
                 </TouchableHighlight>
@@ -106,11 +90,11 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
       if (this.props.isEditing)
       {
       trashIcon = (<View style={styles.editView} onLayout={(event) => {this.updateDropZoneValues(event, "delete")}}>
-                <Image style={styles.editViewImage} source={require('../imgs/removeZone.png')} />
+                <Image style={styles.editViewImage} source={require('../imgs/trash.png')} />
               </View>)
       editIcon = (
               <View style={styles.editView} onLayout={(event) => {this.updateDropZoneValues(event, "edit")}}>
-                <Image style={styles.editViewImage} source={require('../imgs/editZone.png')} />
+                <Image style={styles.editViewImage} source={require('../imgs/editBookmark.png')} />
               </View>   )
       }
 
@@ -119,7 +103,8 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
             <ScrollView style={styles.sideScrollDiv}>
                 {showFolder}
             </ScrollView>        
-               
+            {trashIcon}
+            {editIcon}   
           </View>
       );
   }
@@ -127,6 +112,20 @@ import { StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpa
 
 const styles = StyleSheet.create({
     
+editViewImage : {
+   alignItems: "center",
+},
+
+editView : {
+  width: '100%',
+   alignItems: "center",
+   marginBottom: 20
+},
+
+editViewContainer : {
+   alignItems: "center",
+},
+
 folderImgView : {
     width: 40,
     height: 30
@@ -150,13 +149,11 @@ sidediv:{
          height:"100%",
          width:"65%",
          bottom:0,
-       
-     
-  }, 
+}, 
 
 sideScrollDiv:{
     
-      height:"100%",
+      height:"50%",
          width:"92%",
 },    
     
@@ -168,7 +165,7 @@ sidedivPic:{
 }, 
     
 sidedivSubPic:{
-         marginBottom:20,
+         marginTop:5,
         flexDirection: "row",
 }, 
 
@@ -185,7 +182,6 @@ bmfBut:{
 folderText:{
     marginTop:15,
     color: "black"
-
 },
     
 delBut:{
@@ -201,23 +197,7 @@ delBut:{
 delText:{
     top:15,
     color: "white"
-},   
-                                                     
-folderStyle:{
-                                                     
-width:"50%",
-},
-delBut:{
-width: 20,
- marginTop: 7,
-    height: 20,
- marginLeft:8,                                                    
-}, 
-delBut22:{
-marginTop: 5,
-width: 40,
-    height: 40
-}                                                      
-                                                     
+},    
+    
 });
 

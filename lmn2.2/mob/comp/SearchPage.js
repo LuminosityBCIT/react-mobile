@@ -37,13 +37,11 @@ searchBookmark = (data) => {
 console.log("data", data);
 }
      
-openBookmark = (data) =>{
-    this.props.openBrowser(data);
+openBookmark = (obj) =>{
+    this.props.openBrowser.bind(obj.url);
     this.props.selectWindow(4);
-    this.props.selectPopUp(1);
-    this.props.cloudState(true);
     
-    console.log("url", data);
+    console.log(data);
 }
       
 render() {
@@ -62,12 +60,7 @@ render() {
         showSearchedBookmarks = searchFilter.map((obj, i)=>{
         return (
 
-            
-            
-            <TouchableOpacity 
-                style={styles.markGalleryDisplay}
-                onPress={this.openBookmark.bind(this, obj.url)}
-                >
+            <View style={styles.markGalleryDisplay}>
             
             <Text style={styles.markGalleryText}>
               {obj.title}
@@ -75,13 +68,12 @@ render() {
             
             <Image style={styles.markImg}
                 source={{uri:this.props.imgSource+obj.url}}
-                
+                onPress={this.openBookmark.bind(this, obj.url)}
                                                  
             />
             
-            </TouchableOpacity>
     
-          
+            </View>
                                         
         ) 
     });
@@ -137,10 +129,7 @@ render() {
                      
               </View>   
    </View>
-             <TouchableOpacity  
-                style={styles.containerRemove} 
-                onPress={this.cancelFunction}
-              >        
+             <TouchableOpacity  style={styles.containerRemove} onPress={this.cancelFunction}>        
             </TouchableOpacity>
                           
 </View>

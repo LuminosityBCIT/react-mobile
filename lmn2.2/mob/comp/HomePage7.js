@@ -260,10 +260,10 @@ constructor(props) {
     editBookmark = () => {
       
         
-        if(this.editButs == true) { 
+        if(this.state.editButs == true) { 
             
             this.setState({
-                cloudToggle:true,
+                cloudToggle:false,
                 sideP1H:"10%",
                 sideP2H:"90%",
                 sideP3H:"0%",
@@ -623,27 +623,27 @@ constructor(props) {
         return isDropZone;
     }
     
-//    swithEditMode = () =>
-//    {
-//        this.setState({
-//            isEditing: !this.state.isEditing
-//        });
-//
-//        //
-//        //  display burger view while editing
-//        //
-//        if (this.state.isEditing && !this.state.burgerbuts)
-//        {
-//            //this.burgerOnPress();
-//        }
-//        //
-//        //  When editing is done, hide the burger view
-//        //
-//        if (!this.state.isEditing && this.state.burgerbuts)
-//        {
-//            //this.burgerOnPress();
-//        }
-//    }
+    swithEditMode = () =>
+    {
+        this.setState({
+            isEditing: !this.state.isEditing
+        });
+
+        //
+        //  display burger view while editing
+        //
+        if (this.state.isEditing && !this.state.burgerbuts)
+        {
+            //this.burgerOnPress();
+        }
+        //
+        //  When editing is done, hide the burger view
+        //
+        if (!this.state.isEditing && this.state.burgerbuts)
+        {
+            //this.burgerOnPress();
+        }
+    }
     
     cloudState = (data) =>{
         this.setState({
@@ -736,7 +736,7 @@ constructor(props) {
     logOut = () => {
         AsyncStorage.removeItem('idToken');
         AsyncStorage.removeItem('accessToken');
-        this.props.changePage("");
+        this.props.changePage("login");
     }
 
 

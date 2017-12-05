@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Stylesheet, Text, View, TextInput, Button, Image, WebView, Linking, TouchableOpacity } from 'react-native';
+import { Stylesheet, Text, View, TextInput, Button, Image, WebView, Linking, TouchableOpacity, AsyncStorage } from 'react-native';
 import Expo from "expo";
 
 
@@ -42,7 +42,11 @@ export default class Gcontrols extends React.Component {
                     
                     this.props.setIdToken(user.idToken);
                     this.props.setAccessToken(user.accessToken);
-                    this.props.changePage(page);
+                    
+                    AsyncStorage.setItem('idToken', user.idToken);
+                    
+                    AsyncStorage.setItem('accessToken', user.accessToken).then(() => (this.props.changePage(page));
+                                                                               
                     
                     console.log(user);
                     

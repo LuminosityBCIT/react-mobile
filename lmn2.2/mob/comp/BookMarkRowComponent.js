@@ -8,13 +8,12 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
-markGalleryText:{
-         marginTop: 10,
-         marginBottom: 10,
-         fontSize:20,
-         width:"80%",
-         marginLeft:"10%",
-},
+  markGalleryText:{
+       marginTop: 10,
+       marginBottom: 10,
+       fontSize:20,
+       width:"80%",
+  },
   markImg22:{
          width:"80%",
          height:200,
@@ -25,12 +24,6 @@ markGalleryText:{
            height:200,
           
   }, 
-    markGalleryDisplay:{
-         
-         marginBottom:5,
-         width:"100%",
-    
-}, 
 });
 
 //
@@ -96,32 +89,7 @@ class BookMarkRowComponent extends Component {
     if (!this.props.isEditing)
     {
       panStyle = null;
-      }
-  
-     var imageElement = null;
- 
-     //
-     //  If it is in edit mode, do not make the image clickable
-     //
-     if (this.props.isEditing)
-     {    
-             imageElement = (<View style={[styles.markImg22, {height: this.props.bookmarkImgH}]}>
-                 <Image style={[styles.markImg, {height: this.props.bookmarkImgH}]} source={{uri:this.props.url}}/>
-             </View>)
-     }
-     //
-     //  If it is not in edit mode, make the image clickable and call openBrower
-     //
-     else {    
-             imageElement = (<TouchableOpacity
-             style={[styles.markImg22]}
-             onPress={this.openBrowser}
-             activeOpacity={1}>
-                 <Image style={[styles.markImg]}
-                 source={{uri:this.props.url}}/>
-             </TouchableOpacity>)
-     }
- 
+    }
 
     return (
        <Animated.View
@@ -129,8 +97,14 @@ class BookMarkRowComponent extends Component {
         style={[panStyle, styles.markGalleryDisplay]} onLayout={this.checkVisible}>
             <Text style={styles.markGalleryText}>
                 {this.props.obj.title}
-           </Text>        
-            {imageElement} 
+            </Text>            
+            <TouchableOpacity
+            style={styles.markImg22}
+            onPress={this.openBrowser}
+            activeOpacity={1}>
+                <Image style={styles.markImg}
+                source={{uri:this.props.url}}/>
+            </TouchableOpacity> 
         </Animated.View>
     );
   }

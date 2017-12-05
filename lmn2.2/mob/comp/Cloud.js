@@ -28,7 +28,9 @@ import styles from './css/cloudStyle';
                 w: 57,
                 h: 57,
                 cloudbuts:true,
-                browserWindow:false
+                browserWindow:false,
+                homeIcon: require('../imgs/google.png')
+
                     };
 
        
@@ -142,7 +144,7 @@ render() {
                 style={[styles.butCloud44, {top: this.state.t44, left: this.state.l44}]} >               
                     <Image
                     style={[styles.butCloud4, {width: this.state.w, height: this.state.h}]} 
-                    source={this.props.homeIcon}/>
+                    source={this.state.homeIcon}/>
                </TouchableOpacity> 
 
               <TouchableOpacity 

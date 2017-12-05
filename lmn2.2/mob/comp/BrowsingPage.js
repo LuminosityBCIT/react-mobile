@@ -25,20 +25,11 @@ this.state = {
     }
 
 }
-
-componentWillMount(){
-    this.props.changeBrowsingMode(true);
-}    
-
-componentWillUnmount(){
-    this.props.changeBrowsingMode(false);
-}    
-    
     
 componentDidMount(){
     this.inputFocus.focus();
     
-    var openBookmark = this.props.webLink;
+    var openBookmark = this.props.selectedLink;
     
     this.setState({
         url:openBookmark
@@ -57,8 +48,9 @@ reload(){
 handleTextInputChange(event) {
     var url = event.nativeEvent.text;
     
+    //ask ben for . url stuff
     
-    if (!/^[a-zA-Z-_]+:/.test(url)) {
+    else if (!/^[a-zA-Z-_]+:/.test(url)) {
       url = "https://www.google.ca/search?q=" + url;
     } 
    
@@ -66,16 +58,10 @@ handleTextInputChange(event) {
   }
     
 onSubmitEditing(event) {
-    var url = event.nativeEvent.text;
-    if(url != ""){
-    
     this.pressGoButton();
   }
     
-}
-    
   pressGoButton() {
-
     var url = this.inputText.toLowerCase();
     if (url === this.state.url) {
       this.reload();
@@ -142,7 +128,6 @@ render() {
                             autoCapitalize="none"
                             clearButtonMode="while-editing"
                             ref={(urlInput) => { this.inputFocus = urlInput; }}
-                            underlineColorAndroid={'rgba(0,0,0,0)'}
                             />
                        <TouchableOpacity
                              style={styles.refreshBut11}
