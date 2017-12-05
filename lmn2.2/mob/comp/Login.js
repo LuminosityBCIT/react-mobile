@@ -6,7 +6,7 @@ import Expo from "expo";
 
 //Use google sign in fonts(for whole body text), sidebar, 50%? 40%? need to use react for the project?;
 
-export default class Gcontrols extends React.Component {
+export default class Login extends React.Component {
     constructor(props){
         super(props);
         
@@ -32,6 +32,7 @@ export default class Gcontrols extends React.Component {
                 if(user.type == "success"){
                     //var token = resp.token;
                     
+                    console.log("user = " + user); 
                     
                     var page = "unorganized";
 //                    console.log(resp);
@@ -45,15 +46,15 @@ export default class Gcontrols extends React.Component {
                     
                     AsyncStorage.setItem('idToken', user.idToken);
                     
-                    AsyncStorage.setItem('accessToken', user.accessToken).then(() => (this.props.changePage(page));
+                AsyncStorage.setItem('accessToken', user.accessToken).then(() => (this.props.changePage(page)));
                                                                                
                     
-                    console.log(user);
+                    
                     
                 }
             })
             
-            console.log(result);
+            console.log("result", result);
         } catch(e){
             console.log(e);
             
