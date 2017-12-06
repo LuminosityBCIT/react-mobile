@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import * as firebase from 'firebase';
-import { ListView, StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpacity, TextInput, WebView, ScrollView, NativeModules, LayoutAnimation, FlatList, Animated, Easing, AsyncStorage } from 'react-native';
+import { ListView, StyleSheet, Text, View, Image, TouchableHighlight, Button, TouchableOpacity, TextInput, WebView, ScrollView, NativeModules, LayoutAnimation, FlatList, Animated, Easing, AsyncStorage, Alert } from 'react-native';
 
 import CreateBookmark from "./CreateBookmark";
 import CreateFolder from "./CreateFolder";
@@ -609,7 +609,47 @@ constructor(props) {
         if (isDropZone)
         {
 
-            if (droppedFolderKey == "edit")
+            if (droppedFolderKey == "delete")
+            {
+                // https://facebook.github.io/react-native/docs/alert.html
+                // Works on both iOS and Android
+                Alert.alert(
+                  'Alert',
+                  'Are you sure you want to delete this bookmark?',
+                  [
+                    {text: 'Cancel', onPress: () => {
+                        this.editBookmark();
+                        return;
+                    }, style: 'cancel'},
+                    {text: 'Yes', onPress: () => {
+
+                        var newBookmarkObj = bookmark;
+                        var user = firebase.auth().currentUser;
+                        var bookmarkDbRef = "users/"+user.uid+"/bookmarks";
+
+                        var newBookmarkLists = [];
+                        this.state.fullBookmarkLists.forEach(function(thisBookmark) {
+
+                            //
+                            //  if it is for delete, do not add to new array if url and title are the same
+                            //
+                            if ((thisBookmark.url != bookmark.url) && (thisBookmark.title != bookmark.title))
+                            {
+                                newBookmarkLists.push(thisBookmark);
+                            }
+                        });
+
+                        //
+                        //  Turn off edit mode when drag & drop is done
+                        //
+                        firebase.database().ref(bookmarkDbRef).set(newBookmarkLists);
+                        this.editBookmark();
+                    }},
+                  ],
+                  { cancelable: false }
+                )
+            }
+            else if (droppedFolderKey == "edit")
             {
                 var folderName = "undefined";
                 this.state.folderLists.forEach(function(folder){
@@ -639,28 +679,15 @@ constructor(props) {
 
                 var newBookmarkLists = [];
                 this.state.fullBookmarkLists.forEach(function(thisBookmark) {
-
-                    if (droppedFolderKey == "delete")
+                    //
+                    //  if it is for updateing the folder, change the folder key if url and title are the same
+                    //
+                    if ((thisBookmark.url == bookmark.url) && (thisBookmark.title == bookmark.title))
                     {
-                        //
-                        //  if it is for delete, do not add to new array if url and title are the same
-                        //
-                        if ((thisBookmark.url != bookmark.url) && (thisBookmark.title != bookmark.title))
-                        {
-                            newBookmarkLists.push(thisBookmark);
-                        }
+                        thisBookmark.folderkey = droppedFolderKey;
                     }
-                    else {
-                        //
-                        //  if it is for updateing the folder, change the folder key if url and title are the same
-                        //
-                        if ((thisBookmark.url == bookmark.url) && (thisBookmark.title == bookmark.title))
-                        {
-                            thisBookmark.folderkey = droppedFolderKey;
-                        }
 
-                        newBookmarkLists.push(thisBookmark);
-                    }
+                    newBookmarkLists.push(thisBookmark);
                 });
 
                 //

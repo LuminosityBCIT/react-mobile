@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, AsyncStorage } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 
 import Login from "./comp/Login";
 import HomePage from "./comp/HomePage";
@@ -29,32 +29,6 @@ export default class App extends React.Component {
    
         
     }
- 
-componentDidMount(){
- this.checkToken();
-}
- 
-async checkToken(){ 
-    let getIdToken = await AsyncStorage.getItem('idToken'); 
-    let getAccessToken = await AsyncStorage.getItem('accessToken'); 
-
-    this.setState({
-        idToken:getIdToken,
-        accessToken:getAccessToken
-    })
-  
-    AsyncStorage.getItem('idToken').then((res) => console.log("homepage idT", res));
-    
-    AsyncStorage.getItem('accessToken').then((res) => console.log("homepage acT", res));
-
-//    if (this.state.idToken != null && this.state.accessToken != null){
-//    
-//    this.setState({
-//        page:"homepage"
-//    })
-//}
-    
-}       
     
     
 changePage(data){
@@ -98,18 +72,23 @@ setAccessToken(data){
             />
     }
       
-    else if (this.state.page == "homepage"){
+    else if (this.state.page == "unorganized"){
         comp = <HomePage 
                 idToken={this.state.idToken}
-                accessToken={this.state.accessToken}
-                changePage={this.changePage}
+                accessToken={this.state.accessToken}  
                 />
     }
       
+    //var cloud = null;
+      
+//    if (this.state.cloud == "true"){
+//        cloud = <CloudIcon />
+//    }
+      
+      
     return (
       <View style={styles.container}>
-        <Image source={require('./imgs/background.png')} 
-        style={styles.entireBg}
+        <Image source={require('./imgs/background.png')} style={styles.entireBg}
         />
         {comp}
        
