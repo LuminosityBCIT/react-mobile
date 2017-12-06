@@ -49,8 +49,6 @@ export default class Login extends React.Component {
                 AsyncStorage.setItem('accessToken', user.accessToken).then(() => (this.props.changePage(page)));
                                                                                
                     
-                    
-                    
                 }
             })
             
@@ -83,22 +81,16 @@ export default class Login extends React.Component {
                 </View>
                     
                     
-                    <TouchableOpacity style={{width: 300, height: 55,  marginTop:10, marginBottom:15, backgroundColor:"#4C8BF5", padding:10}} onPress={this.login}>
+                    <TouchableOpacity 
+                    style={{width: 300, height: 55,  marginTop:10, marginBottom:15, backgroundColor:"#BADADD", padding:10, borderRadius: 4, borderWidth: 0.5,
+                    borderColor: '#00263A', }} onPress={this.login}>
                      
-                    <Image style={{top:13, left: 15, position:'absolute', width:30, height:30}} source={require('../imgs/google_login.png')} />
+                    <Image style={{top:13, left: 40, position:'absolute', width:30, height:30}} source={require('../imgs/google.png')} />
                     
-                    <Text style={{top:15, right: 32, position:'absolute', width:200, height:30, fontSize: 20, color: "white"}} >Login With Google</Text>
+                    <Text style={{top:15, right: 20, position:'absolute', width:200, height:30, fontSize: 20, color: "#00263A"}} >Log In With Google</Text>
                 
                     </TouchableOpacity> 
                 
-                
-                <TouchableOpacity style={{width: 300, height: 55,  marginTop:15, marginBottom:10, backgroundColor:"#4C8BF5", padding:10}} onPress={this.login}>
-                     
-                    <Image style={{top:13, left: 15, position:'absolute', width:30, height:30}} source={require('../imgs/google_login.png')} />
-                    
-                    <Text style={{top:15, right: 90, position:'absolute', width:100, height:30, fontSize: 20, color: "white"}} >Sign Up</Text>
-                
-                    </TouchableOpacity> 
             
             </View>
         

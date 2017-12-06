@@ -31,6 +31,33 @@ export default class App extends React.Component {
     }
     
     
+componentDidMount(){
+ this.checkToken();
+}
+ 
+async checkToken(){ 
+    let getIdToken = await AsyncStorage.getItem('idToken'); 
+    let getAccessToken = await AsyncStorage.getItem('accessToken'); 
+
+    this.setState({
+        idToken:getIdToken,
+        accessToken:getAccessToken
+    })
+  
+    AsyncStorage.getItem('idToken').then((res) => console.log("homepage idT", res));
+    
+    AsyncStorage.getItem('accessToken').then((res) => console.log("homepage acT", res));
+
+//    if (this.state.idToken != null && this.state.accessToken != null){
+//    
+//    this.setState({
+//        page:"homepage"
+//    })
+//}
+    
+}           
+    
+    
 changePage(data){
     this.setState({
         page:data

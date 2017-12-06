@@ -13,9 +13,11 @@ const styles = StyleSheet.create({
        marginBottom: 10,
        fontSize:20,
        width:"80%",
+       marginLeft:"10%",
   },
   markImg22:{
          width:"80%",
+         marginLeft:"10%",
          height:200,
          marginBottom: 50,
   }, 
@@ -24,8 +26,12 @@ const styles = StyleSheet.create({
            height:200,
           
   }, 
+    markGalleryDisplay:{
+        marginBottom:20,
+        width:"100%"
+        
+    }
 });
-
 //
 //  All Drag and Drop Reference
 //  https://blog.reactnativecoach.com/creating-draggable-component-with-react-native-132d30c27cb0
@@ -38,7 +44,8 @@ class BookMarkRowComponent extends Component {
       showDraggable: true,
       dropAreaValues: null,
       pan: new Animated.ValueXY(),
-      opacity: new Animated.Value(1)
+      opacity: new Animated.Value(1),
+      maxLimit:20
     };
   }
 
@@ -120,7 +127,7 @@ class BookMarkRowComponent extends Component {
         {...this.panResponder.panHandlers}
         style={[panStyle, styles.markGalleryDisplay]} onLayout={this.checkVisible}>
             <Text style={styles.markGalleryText}>
-                {this.props.obj.title}
+                { ((this.props.obj.title).length > this.state.maxLimit) ? (((this.props.obj.title).substring(0,this.state.maxLimit-3))+ '...'):this.props.obj.title}
             </Text>        
             {imageElement}
         </Animated.View>
