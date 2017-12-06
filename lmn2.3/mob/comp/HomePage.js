@@ -10,7 +10,6 @@ import BrowsingPage from "./BrowsingPage";
 import SideBar from "./SideBar";
 import SearchPage from "./SearchPage";
 import BookMarkRowComponent from "./BookMarkRowComponent";
-import Confirmation from "./Confirmation";
     
 //import CheckBox from 'react-native-checkbox';
 
@@ -82,8 +81,6 @@ constructor(props) {
             currentlyEditingBookmark: null,
             //browserVisibility:"'hidden'"
             homeIcon:require('../imgs/google.png'),
-            
-            confirmToggle:0,
             
             bookmarkH: 250,
             bookmarkMB: 20,
@@ -399,8 +396,6 @@ constructor(props) {
             popUpType:index
         })
     }
-    
-    
     
 
     submitBookmark = (obj) => {
@@ -721,28 +716,6 @@ constructor(props) {
         })
     }
     
-    listenForAuth2() {
-        this.unsubscribe = firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .then(function() {
-    /*// Existing and future Auth states are now persisted in the current
-    // session only. Closing the window would clear any existing state even
-    // if a user forgets to sign out.
-    // ...
-    // New sign-in will be persisted with session persistence.*/
-            
-    const credential = firebase.auth.GoogleAuthProvider.credential(this.props.idToken, this.props.accessToken);
-            
-    return firebase.auth().signInWithCredential(credential);   
-            
-  });
-//  .catch(function(error) {
-// 
-//  });
-
-    }
-    
-    
-
     
     urlStateChange = (data) => {
         //var userlink = webViewState.url;
@@ -830,14 +803,6 @@ constructor(props) {
         
         
     }
-    
-    
-    confirmDelete = () => {
-        this.setState({
-            confirmToggle:1
-        })
-    }
-    
     
     
 render() {
@@ -1024,19 +989,6 @@ render() {
             cloudDisplay = null;
             
         }
-    
-    
-    var confirmDisplay = null;
-    
-        if (this.state.confirmToggle == 0){
-            confirmDisplay = null;
-        }
-        
-        else if (this.state.confirmToggle == 1){
-            confirmDisplay = <Confirmation 
-                                
-                                />
-        }
 
         //
         //  if the bookmark is being edited, display bookmark row elements in flat view instaed of scrollview
@@ -1168,7 +1120,6 @@ render() {
         {windowDisplay} 
         {popUpDisplay}
         {cloudDisplay}
-        {confirmDisplay}
         
     </View>
     );

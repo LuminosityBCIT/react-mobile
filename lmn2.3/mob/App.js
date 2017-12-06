@@ -29,8 +29,7 @@ export default class App extends React.Component {
    
         
     }
-    
-    
+ 
 componentDidMount(){
  this.checkToken();
 }
@@ -55,7 +54,7 @@ async checkToken(){
 //    })
 //}
     
-}           
+}       
     
     
 changePage(data){
@@ -99,7 +98,7 @@ setAccessToken(data){
             />
     }
       
-    else if (this.state.page == "unorganized"){
+    else if (this.state.page == "homepage"){
         comp = <HomePage 
                 idToken={this.state.idToken}
                 accessToken={this.state.accessToken}
@@ -107,16 +106,10 @@ setAccessToken(data){
                 />
     }
       
-    //var cloud = null;
-      
-//    if (this.state.cloud == "true"){
-//        cloud = <CloudIcon />
-//    }
-      
-      
     return (
       <View style={styles.container}>
-        <Image source={require('./imgs/background.png')} style={styles.entireBg}
+        <Image source={require('./imgs/background.png')} 
+        style={styles.entireBg}
         />
         {comp}
        
