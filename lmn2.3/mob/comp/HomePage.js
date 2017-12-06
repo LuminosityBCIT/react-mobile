@@ -132,8 +132,6 @@ constructor(props) {
                    
         // connect to a Firebase table
         //
-        //KAYLIE!!
-        //
         //
         //  Following code is to retrieve data snapshot from Firebase for user's bookmark data
         //  and converting it into datasource for ListView instaed of ScrollView which causes some problem on display multiple items in rows

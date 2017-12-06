@@ -89,7 +89,7 @@ updateBookmark = () => {
       folder_key = this.state.selectedFolder["folder_key"];
     }
     //
-    //  Fixed by Kaylie for updating the bookmark when folder was not modified
+    //  For updating the bookmark when folder was not modified
     // 
     else if (this.props.currentlyEditingBookmark.folder_name)
     {
